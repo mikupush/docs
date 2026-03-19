@@ -1,0 +1,117 @@
+---
+sidebar_position: 1
+---
+
+import LatestReleaseLinks from '@site/src/components/LatestReleaseLinks';
+
+# Installation
+
+In this guide, you will learn how to install the MikuPush server using Docker Compose or natively using a Debian package.
+
+## Prerequisites
+
+Before starting, ensure you have a **PostgreSQL 17** database available. If you use the Docker Compose method, a database container is included in the example.
+
+## Install with Docker Compose (Recommended)
+
+Using Docker is the easiest way to get MikuPush running. We recommend using Docker Compose to manage the server and its database.
+
+### 1. Create a `docker-compose.yml`
+
+Create a new directory for MikuPush and create a `docker-compose.yml` file:
+
+```yaml
+services:
+  server:
+    image: mikupush/server:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/srv/data
+      - ./config.yaml:/srv/config.yaml:ro # optional, only if you want to configure the server though the configuration file
+    environment:
+      - MIKU_PUSH_DATABASE_HOST=postgres
+      - MIKU_PUSH_DATABASE_PORT=5432
+      - MIKU_PUSH_DATABASE_NAME=miku_push
+      - MIKU_PUSH_DATABASE_USER=miku_push
+      - MIKU_PUSH_DATABASE_PASSWORD=miku_push
+
+  postgres:
+    image: postgres:17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=miku_push
+      - POSTGRES_USER=miku_push
+      - POSTGRES_PASSWORD=miku_push
+
+volumes:
+  postgres_data:
+```
+
+### 2. Configuration
+
+You can download a template for the `config.yaml` file:
+
+```bash
+curl -L https://raw.githubusercontent.com/mikupush/server/refs/heads/main/config.example.yaml -o config.yaml
+```
+
+If you need to customize the server configuration, you can edit this file or use Environment Variables. 
+
+Check the [Configuration](./configuration.mdx) page for a full list of available options and their priorities.
+
+**Example (Docker Environment Variables):**
+You can also add configurations directly to your `docker-compose.yml`:
+```yaml
+    environment:
+      - MIKU_PUSH_LOG_LEVEL=debug
+      - MIKU_PUSH_UPLOAD_MAX_SIZE=100000000
+```
+
+### 3. Start the server
+
+Run the following command to start the containers in the background:
+
+```bash
+docker compose up -d
+```
+
+The server will be available at `http://localhost:8080`.
+
+---
+
+## Native Installation (Debian/Ubuntu)
+
+If you prefer a native installation, we provide `.deb` packages for `amd64` and `arm64` architectures.
+
+### 1. Download and Install
+
+You can always download the latest version of the package directly from GitHub:
+
+<LatestReleaseLinks />
+
+### 2. Configuration
+
+The configuration file is located at `/etc/io.mikupush.server/config.yaml`. Edit it to configure your database connection or other settings:
+
+```bash
+sudo nano /etc/io.mikupush.server/config.yaml
+```
+
+If you need to know more about the available options (logging, upload limits, etc.), please check the [Configuration](./configuration.mdx) page.
+
+### 3. Service Management
+
+The package automatically installs and enables a systemd service. You can manage it with the following commands:
+
+```bash
+# Start the service
+sudo systemctl start mikupush-server
+
+# Check the status
+sudo systemctl status mikupush-server
+
+# Restart after configuration changes
+sudo systemctl restart mikupush-server
+```

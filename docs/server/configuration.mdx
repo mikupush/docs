@@ -1,0 +1,201 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Configuration
+
+MikuPush server is highly configurable. You can use a YAML file (`config.yaml`), Environment Variables, or rely on built-in defaults.
+
+## Configuration Priority
+
+When the server starts, it resolves configuration values in the following order of precedence (from highest to lowest):
+
+1.  **Environment Variables**: If a variable is set in the environment, it will always take precedence over any other source.
+2.  **YAML File (`config.yaml`)**: If no environment variable is found, the server looks for the value in the configuration file.
+3.  **Built-in Defaults**: If a setting is missing in both environment variables and the YAML file, the server uses its internal default value.
+
+:::info Precedence Example
+If you define `port: 8080` in `config.yaml` but also set the environment variable `MIKU_PUSH_SERVER_PORT=9000`, the server will listen on port **9000**.
+:::
+
+## Server Settings
+
+General settings for the HTTP API server.
+
+<Tabs>
+  <TabItem value="yaml" label="YAML" default>
+
+```yaml
+server:
+  host: 0.0.0.0
+  port: 8080
+  static_directory: dist/assets
+  static_base_path: /assets
+  templates_directory: dist
+```
+
+  </TabItem>
+  <TabItem value="env" label="Environment Variables">
+
+```bash
+MIKU_PUSH_SERVER_HOST=0.0.0.0
+MIKU_PUSH_SERVER_PORT=8080
+MIKU_PUSH_SERVER_STATIC_DIR=dist/assets
+MIKU_PUSH_SERVER_STATIC_BASE_PATH=/assets
+MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
+```
+
+  </TabItem>
+</Tabs>
+
+| YAML Key | Env Variable | Description |
+| :--- | :--- | :--- |
+| `server.host` | `MIKU_PUSH_SERVER_HOST` | The IP address or hostname the server will listen on. |
+| `server.port` | `MIKU_PUSH_SERVER_PORT` | The TCP port for the server to bind to. |
+| `server.static_directory` | `MIKU_PUSH_SERVER_STATIC_DIR` | Path to the directory containing static assets. |
+| `server.static_base_path` | `MIKU_PUSH_SERVER_STATIC_BASE_PATH` | The URL prefix used to serve static files. |
+| `server.templates_directory` | `MIKU_PUSH_SERVER_TEMPLATES_DIR` | Path to the directory containing HTML templates. |
+
+## Database (PostgreSQL)
+
+Connection settings for your PostgreSQL database.
+
+<Tabs>
+  <TabItem value="yaml" label="YAML" default>
+
+```yaml
+database:
+  host: localhost
+  port: 5432
+  database: postgres
+  user: postgres
+  password: postgres
+```
+
+  </TabItem>
+  <TabItem value="env" label="Environment Variables">
+
+```bash
+MIKU_PUSH_DATABASE_HOST=localhost
+MIKU_PUSH_DATABASE_PORT=5432
+MIKU_PUSH_DATABASE_NAME=postgres
+MIKU_PUSH_DATABASE_USER=postgres
+MIKU_PUSH_DATABASE_PASSWORD=postgres
+```
+
+  </TabItem>
+</Tabs>
+
+| YAML Key | Env Variable | Description |
+| :--- | :--- | :--- |
+| `database.host` | `MIKU_PUSH_DATABASE_HOST` | Hostname or IP address of the PostgreSQL server. |
+| `database.port` | `MIKU_PUSH_DATABASE_PORT` | Port number of the PostgreSQL server. |
+| `database.database` | `MIKU_PUSH_DATABASE_NAME` | Name of the database to connect to. |
+| `database.user` | `MIKU_PUSH_DATABASE_USER` | Username for database authentication. |
+| `database.password` | `MIKU_PUSH_DATABASE_PASSWORD` | Password for database authentication. |
+
+## File Uploads
+
+Configure how the server handles file uploads and expiration.
+
+<Tabs>
+  <TabItem value="yaml" label="YAML" default>
+
+```yaml
+upload:
+  # Maximum size in bytes (e.g. 50GB)
+  max_size: 50000000000
+  # Storage directory
+  directory: data
+  # Expiration in seconds (e.g. 7 days)
+  expires_in_seconds: 604800
+  # Cleanup interval in seconds (e.g. 1 hour)
+  expiration_cleanup_interval_seconds: 3600
+```
+
+  </TabItem>
+  <TabItem value="env" label="Environment Variables">
+
+```bash
+MIKU_PUSH_UPLOAD_MAX_SIZE=50000000000
+MIKU_PUSH_UPLOAD_DIRECTORY=data
+MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS=604800
+MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL=3600
+```
+
+  </TabItem>
+</Tabs>
+
+| YAML Key | Env Variable | Description |
+| :--- | :--- | :--- |
+| `upload.max_size` | `MIKU_PUSH_UPLOAD_MAX_SIZE` | Maximum allowed size (in bytes) for uploaded files. |
+| `upload.directory` | `MIKU_PUSH_UPLOAD_DIRECTORY` | Directory where uploaded files will be stored. |
+| `upload.expires_in_seconds` | `MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS` | Time in seconds after which uploaded files expire. |
+| `upload.expiration_cleanup_interval_seconds` | `MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL` | Interval in seconds to check and delete expired files. |
+
+## Logging
+
+Control the verbosity and output of the server logs.
+
+<Tabs>
+  <TabItem value="yaml" label="YAML" default>
+
+```yaml
+log:
+  level: info
+  file_prefix: server
+  directory: /var/log/mikupush
+  json: false
+```
+
+  </TabItem>
+  <TabItem value="env" label="Environment Variables">
+
+```bash
+MIKU_PUSH_LOG_LEVEL=info
+MIKU_PUSH_LOG_FILE_PREFIX=server
+MIKU_PUSH_LOG_DIRECTORY=/var/log/mikupush
+MIKU_PUSH_LOG_JSON=false
+```
+
+  </TabItem>
+</Tabs>
+
+| YAML Key | Env Variable | Description |
+| :--- | :--- | :--- |
+| `log.level` | `MIKU_PUSH_LOG_LEVEL` | Minimum log level to record (`trace`, `debug`, `info`, `warn`, `error`). |
+| `log.file_prefix` | `MIKU_PUSH_LOG_FILE_PREFIX` | Prefix for the log file names. |
+| `log.directory` | `MIKU_PUSH_LOG_DIRECTORY` | Directory where log files will be saved. |
+| `log.json` | `MIKU_PUSH_LOG_JSON` | Set to `true` to enable logging in JSON format. |
+
+## Debug Mode
+
+Settings for development and debugging.
+
+<Tabs>
+  <TabItem value="yaml" label="YAML" default>
+
+```yaml
+debug:
+  enable: false
+  astro_dev_server: http://localhost:4321/
+```
+
+  </TabItem>
+  <TabItem value="env" label="Environment Variables">
+
+```bash
+MIKU_PUSH_DEBUG_ENABLE=false
+MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER=http://localhost:4321/
+```
+
+  </TabItem>
+</Tabs>
+
+| YAML Key | Env Variable | Description |
+| :--- | :--- | :--- |
+| `debug.enable` | `MIKU_PUSH_DEBUG_ENABLE` | Enable or disable debug mode (proxies UI requests). |
+| `debug.astro_dev_server` | `MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER` | URL of the local Astro development server. |
