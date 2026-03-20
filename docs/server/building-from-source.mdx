@@ -1,0 +1,143 @@
+---
+sidebar_position: 3
+---
+
+# Building from Source
+
+This guide explains how to compile the MikuPush server from source on Linux and produce a binary, a `.deb` package, or a `.tar.gz` archive.
+
+## Prerequisites
+
+You need the following tools installed:
+
+| Tool | Version | Purpose |
+| :--- | :--- | :--- |
+| [Rust](https://www.rust-lang.org/tools/install) | 1.88+ | Compiles the server binary. |
+| [Node.js](https://nodejs.org/) | 22+ | Builds the web UI (Astro). |
+| npm | (bundled with Node.js) | Installs JavaScript dependencies. |
+| git | | Clones the repository. |
+| dpkg | (pre-installed on Debian/Ubuntu) | Only required to build the `.deb` package. |
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/mikupush/server.git
+cd server
+```
+
+## Install JavaScript Dependencies
+
+```bash
+npm install
+```
+
+## Build
+
+The project uses a `Makefile` that orchestrates both the web UI and the Rust binary builds. There are two build profiles available: **debug** and **release**.
+
+### Binary Only
+
+To compile just the server binary:
+
+```bash
+# Debug build (faster compilation, includes debug symbols)
+cargo build
+
+# Release build (optimized)
+cargo build --release
+```
+
+The resulting binary will be at:
+
+| Profile | Path |
+| :--- | :--- |
+| Debug | `target/debug/mikupush-server` |
+| Release | `target/release/mikupush-server` |
+
+:::info
+The binary alone is not enough to run the server with the web UI. You also need to build the web UI (see below) so the server can serve the static files and templates.
+:::
+
+### Web UI
+
+To build the web UI (Astro):
+
+```bash
+npm run build
+```
+
+This generates the `dist/` directory containing the static assets and HTML templates.
+
+### Full Build (Binary + Web UI + Packages)
+
+The `Makefile` provides targets that build everything and produce distributable packages:
+
+```bash
+# Debug packages
+make linux-debug
+
+# Release packages (recommended)
+make linux-release
+```
+
+These targets run, in order:
+1. `npm run build` — builds the web UI into `dist/`.
+2. `cargo build` — compiles the server binary.
+3. `scripts/deb-package.sh` — creates the `.deb` package.
+4. `scripts/tar-package.sh` — creates the `.tar.gz` archive.
+
+## Output Artifacts
+
+After a full build, the generated files are located under `target/<profile>/bundle/`:
+
+| Artifact | Path |
+| :--- | :--- |
+| `.deb` package | `target/<profile>/bundle/mikupush-server_<version>_<arch>.deb` |
+| `.tar.gz` archive | `target/<profile>/bundle/mikupush-server_<version>_<arch>.tar.gz` |
+| Server binary | `target/<profile>/mikupush-server` |
+
+Where `<profile>` is `debug` or `release`, `<version>` is read from the `VERSION` file, and `<arch>` is your system architecture (e.g. `amd64`, `arm64`).
+
+### What's Inside Each Package
+
+The **`.deb` package** installs files to standard system paths:
+
+| File | Installed to |
+| :--- | :--- |
+| Server binary | `/usr/bin/mikupush-server` |
+| Configuration | `/etc/io.mikupush.server/config.yaml` |
+| Web UI | `/usr/share/io.mikupush.server/dist/` |
+| systemd service | `/etc/systemd/system/mikupush-server.service` |
+
+The **`.tar.gz` archive** contains all files in a flat structure, ready to be extracted to any directory:
+
+| File | Description |
+| :--- | :--- |
+| `mikupush-server` | Server binary. |
+| `config.yaml` | Default configuration file. |
+| `dist/` | Pre-built web UI static files and templates. |
+| `mikupush-server.service` | systemd unit file. |
+
+For installation instructions using these artifacts, see the [Installation](./installation.mdx) page.
+
+## Docker Image
+
+You can also build the Docker image locally. The `Dockerfile` uses a multi-stage build: one stage compiles the Rust binary, another builds the web UI with Node.js, and the final stage produces a minimal image based on `debian:bookworm-slim`.
+
+From the repository root:
+
+```bash
+docker build -t mikupush/server:local .
+```
+
+Then run it:
+
+```bash
+docker run -d \
+  --name mikupush-server \
+  -p 8080:8080 \
+  -v "./data:/srv/data" \
+  mikupush/server:local
+```
+
+For a full Docker Compose setup with PostgreSQL, see the [Installation](./installation.mdx#install-with-docker-compose-recommended) page.
