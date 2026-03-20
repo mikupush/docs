@@ -7,20 +7,79 @@ title: Windows
 
 ## Requirements
 
-1. Install the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). Make sure to select "Desktop development with C++" during installation.
-2. Ensure you have the [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) installed (usually pre-installed on Windows 10/11).
+1.  **Visual Studio**: Install [Visual Studio](https://visualstudio.microsoft.com/downloads/) with the following workloads:
+    *   **Desktop development with C++** (for the main Tauri app)
+    *   **.NET desktop development** (for the Windows Helper)
+    *   **WinUI application development** (for the Windows Helper)
 
-## Build the Application
+2.  **WebView2 Runtime**: Ensure you have the [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) installed (usually pre-installed on Windows 10/11).
 
-You can use the Tauri CLI via npm to compile the project.
+## Windows Helper (Share Extension)
 
-### Development Mode
+:::tip
+This entire section is optional. If you do not need the native "Share to" functionality in Windows, you can skip this and proceed directly to the [Build the Main Application](#build-the-main-application) section.
+:::
 
-To run the application in development mode with hot-reloading:
+Miku Push! for Windows includes a helper application that provides a native 
+"Share to" experience, similar to a share extension on macOS. 
+This helper is a separate .NET application that must be built and installed independently.
 
-```bash
-npm run tauri dev
+### 1. Create a Self-Signed Certificate
+
+To install the helper's MSIX package, it must be signed. You can create a self-signed certificate for local development using PowerShell.
+
+First, create the certificate:
+```powershell
+New-SelfSignedCertificate `
+    -Type CodeSigningCert `
+    -KeyUsage DigitalSignature `
+    -CertStoreLocation "Cert:\CurrentUser\My" `
+    -Subject "CN=Miku Push! Team, O=Miku Push! Team, C=ES" `
+    -FriendlyName "Miku Push! Team"
 ```
+
+Next, get the certificate's thumbprint and export it to a PFX file. Replace `<Your Password>` with a secure password of your choice.
+```powershell
+$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*Miku Push! Team*" } | Select-Object -ExpandProperty Thumbprint
+$password = ConvertTo-SecureString -String <Your Password> -Force -AsPlainText
+Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath MikuPushCert.pfx -Password $password
+```
+
+Finally, trust the exported certificate. You must **run this command as an Administrator**.
+```powershell
+Import-PfxCertificate -FilePath MikuPushCert.pfx -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $password
+```
+
+### 2. Build the Signed MSIX Package
+
+From the root of the `mikupush` repository, run the following `dotnet publish` command. Remember to replace `<Your Password>` with the same password you used when creating the certificate.
+
+The command should be run from the `helpers/windows-helpers` directory.
+```powershell
+cd helpers/windows-helpers
+
+dotnet publish `
+    -f net8.0-windows10.0.19041.0 `
+    -c Release `
+    -r win-x64 `
+    --self-contained `
+    -p:Platform=x64 `
+    -p:GenerateAppxPackageOnBuild=true `
+    -p:AppxPackageSigningEnabled=true `
+    -p:PackageCertificateKeyFile="MikuPushCert.pfx" `
+    -p:PackageCertificatePassword="<Your Password>"
+```
+
+### 3. Install the MSIX Package
+
+The installer (`.msixbundle`) will be generated in the `helpers/windows-helpers/AppPackages/windows-helpers_*` folder. You can install it with the following PowerShell command:
+```powershell
+Add-AppxPackage -Path .\AppPackages\windows-helpers_*\windows-helpers_*.msixbundle
+```
+
+## Build the Main Application
+
+This process builds the main Tauri application.
 
 ### Production Build
 
@@ -37,3 +96,11 @@ npm run tauri build -- --debug
 ```
 
 The resulting executables and installers will be located in `src-tauri/target/release/bundle/`.
+
+### Development Mode
+
+To run the application in development mode with hot-reloading:
+
+```bash
+npm run tauri dev
+```
