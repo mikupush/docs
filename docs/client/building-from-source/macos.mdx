@@ -1,0 +1,94 @@
+---
+sidebar_position: 2
+title: macOS
+---
+
+# Building on macOS
+
+## Requirements
+
+It is recommended to install the full Xcode application from the Mac App Store. While older versions might work, Xcode 26 or later is recommended to ensure compatibility with the latest SDKs.
+
+After installing Xcode, ensure the command line tools are also set up by running:
+
+```bash
+xcode-select --install
+```
+
+## macOS Plugin (Share Extension)
+
+The MikuPush client for macOS includes a native app extension (Share Extension) defined in the Tauri configuration:
+
+```json
+"macOS": {
+  "files": {
+    "PlugIns/share.appex": "../helpers/macos-helpers/Build/Products/Release/share.appex"
+  }
+}
+```
+
+This means that before building the main application, you must build the macOS helpers to compile the share extension.
+
+## Code Signing
+
+To build the share extension, you will need a valid Apple Developer account and a provisioning profile. The build script (`scripts/build-macos-helpers.sh`) uses the following environment variables for code signing:
+
+:::tip
+If you do not need the Share Extension and want to avoid the code signing process, 
+you can remove the `files` entry from the `macOS` section in your `tauri.conf.json` 
+file. This will prevent Tauri from trying to bundle the extension. You can then 
+skip the rest of this section and go directly to the [Building without the Share Extension](#building-without-the-share-extension) 
+section below.
+:::
+
+- `APPLE_SIGNING_IDENTITY`: Your Apple Development or Apple Distribution signing identity.
+- `PROVISIONING_PROFILE_SPECIFIER`: The name of the provisioning profile to use.
+- `APPLE_TEAM_ID`: Your Apple Developer team ID.
+
+You can create a `.env` file in the root of the `mikupush` repository with the following content:
+
+```
+APPLE_SIGNING_IDENTITY="Apple Development: yourname@example.com (XXXXXXXXXX)"
+PROVISIONING_PROFILE_SPECIFIER="Your Provisioning Profile Name"
+APPLE_TEAM_ID="YOUR_TEAM_ID"
+```
+
+:::info
+Your provisioning profile must have the **App Groups** capability enabled to allow communication between the main application and the share extension.
+:::
+
+## Build the Application
+
+### Production full Build
+
+We have provided a convenient `Makefile` target that builds both the macOS helpers and the release version of the client.
+
+Run the following command to build the native macOS helpers and the main Tauri application for release:
+
+```bash
+make build-macos
+```
+
+The resulting app bundles and disk images (`.dmg`) will be located in `src-tauri/target/release/bundle/macos/`.
+
+### Building without the Share Extension
+
+If you have removed the `files` entry from `tauri.conf.json` as mentioned above, you no longer need the `make build-macos` command. You can build the application using the standard Tauri CLI commands:
+
+- **Release Build**:
+  ```bash
+  npm run tauri build
+  ```
+
+- **Debug Build**:
+  ```bash
+  npm run tauri build -- --debug
+  ```
+
+### Development Mode
+
+If you just want to run the application in development mode with hot-reloading (without building the release bundle):
+
+```bash
+npm run tauri dev
+```

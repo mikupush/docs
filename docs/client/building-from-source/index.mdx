@@ -1,0 +1,48 @@
+---
+sidebar_position: 1
+title: Overview
+---
+
+# Building from Source
+
+This section explains how to compile the MikuPush client from source for different operating systems.
+The MikuPush client is built with [Tauri](https://v2.tauri.app/), using a Rust backend with Diesel for the database and a web frontend.
+
+## Common Prerequisites
+
+Regardless of your operating system, you need the following tools installed:
+
+| Tool | Version | Purpose |
+| :--- | :--- | :--- |
+| [Rust](https://www.rust-lang.org/tools/install) | 1.88+ | Compiles the Tauri backend. |
+| [Node.js](https://nodejs.org/) | 22+ | Builds the web UI. |
+| npm | (bundled with Node.js) | Installs JavaScript dependencies. |
+| git | | Clones the repository. |
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/mikupush/mikupush.git
+cd mikupush
+```
+
+## Install Dependencies
+
+Install the frontend dependencies via npm:
+
+```bash
+npm install
+```
+
+## Diesel Setup
+
+The client uses [Diesel](https://diesel.rs/) as the ORM with SQLite.
+Ensure you have the `diesel_cli` installed to run database migrations if needed during development:
+
+```bash
+cargo install diesel_cli --no-default-features --features sqlite
+```
+
+*Note: For the SQLite feature on Linux, you must have `libsqlite3-dev` installed. On Windows and macOS, SQLite is usually bundled or easier to set up.*
+
+Please choose your operating system from the sidebar to see specific build instructions.

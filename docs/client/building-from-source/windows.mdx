@@ -1,0 +1,39 @@
+---
+sidebar_position: 3
+title: Windows
+---
+
+# Building on Windows
+
+## Requirements
+
+1. Install the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/). Make sure to select "Desktop development with C++" during installation.
+2. Ensure you have the [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) installed (usually pre-installed on Windows 10/11).
+
+## Build the Application
+
+You can use the Tauri CLI via npm to compile the project.
+
+### Development Mode
+
+To run the application in development mode with hot-reloading:
+
+```bash
+npm run tauri dev
+```
+
+### Production Build
+
+To build the optimized production binaries and installers (`.msi`, `.exe`) for Windows:
+
+```bash
+npm run tauri build
+```
+
+Or run the debug build:
+
+```bash
+npm run tauri build -- --debug
+```
+
+The resulting executables and installers will be located in `src-tauri/target/release/bundle/`.
