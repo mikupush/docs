@@ -7,7 +7,7 @@ import LatestReleaseTarLinks from '@site/src/components/LatestReleaseTarLinks';
 
 # Instalación
 
-En esta guía, aprenderás a instalar el servidor Miku Push! usando Docker Compose, un paquete Debian o un tarball genérico para cualquier distribución de Linux.
+En esta guía, aprenderás a instalar el servidor *Miku Push!* usando Docker Compose, un paquete Debian o un tarball genérico para cualquier distribución de Linux.
 
 :::tip Compílalo tú mismo
 Si prefieres compilar el servidor desde el código fuente en lugar de usar artefactos precompilados, consulta la guía [Compilando desde Fuente](./building-from-source.mdx).
@@ -19,11 +19,11 @@ Antes de empezar, asegúrate de tener una base de datos **PostgreSQL 17** dispon
 
 ## Instalar con Docker Compose (Recomendado)
 
-Usar Docker es la forma más fácil de poner en marcha Miku Push!. Recomendamos usar Docker Compose para gestionar el servidor y su base de datos.
+Usar Docker es la forma más fácil de poner en marcha *Miku Push!*. Recomendamos usar Docker Compose para gestionar el servidor y su base de datos.
 
 ### 1. Crea un `docker-compose.yml`
 
-Crea un nuevo directorio para Miku Push! y crea un archivo `docker-compose.yml`:
+Crea un nuevo directorio para *Miku Push!* y crea un archivo `docker-compose.yml`:
 
 ```yaml
 services:
@@ -127,7 +127,7 @@ Para confirmar que el servidor está respondiendo, consulta los pasos de [Verifi
 
 ## Instalación Genérica de Linux (tar.gz)
 
-Para cualquier distribución de Linux con **systemd**, puedes instalar Miku Push! desde el tarball comprimido disponible en la [página de lanzamientos de GitHub](https://github.com/mikupush/server/releases).
+Para cualquier distribución de Linux con **systemd**, puedes instalar *Miku Push!* desde el tarball comprimido disponible en la [página de lanzamientos de GitHub](https://github.com/mikupush/server/releases).
 
 El archivo contiene los siguientes ficheros:
 
@@ -148,7 +148,7 @@ sudo mkdir -p /opt/mikupush-server
 
 <LatestReleaseTarLinks />
 
-### 2. Crea un Usuario Dedicado
+### 2. Crea un usuario dedicado
 
 Crea un usuario del sistema para ejecutar el servicio:
 
@@ -156,7 +156,7 @@ Crea un usuario del sistema para ejecutar el servicio:
 sudo useradd -r -s /usr/sbin/nologin mikupush
 ```
 
-### 3. Crea los Directorios de Datos y Logs
+### 3. Crea los directorios de datos y logs
 
 ```bash
 sudo mkdir -p /var/lib/io.mikupush.server/data
@@ -191,7 +191,7 @@ upload:
 
 Para todas las opciones disponibles, consulta la página de [Configuración](./configuration.mdx).
 
-### 5. Instala el Servicio de systemd
+### 5. Instala el servicio de Systemd
 
 Copia el archivo de unidad incluido y actualiza `ExecStart` para que apunte al binario y al archivo de configuración:
 

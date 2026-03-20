@@ -7,39 +7,39 @@ title: Windows
 
 ## Requisitos
 
-1.  **Visual Studio**: Instala [Visual Studio](https://visualstudio.microsoft.com/downloads/) con las siguientes cargas de trabajo:
-    *   **Desarrollo de escritorio con C++** (para la aplicación principal de Tauri)
-    *   **Desarrollo de escritorio .NET** (para el Ayudante de Windows)
-    *   **Desarrollo de aplicaciones WinUI** (para el Ayudante de Windows)
+1.  **Visual Studio**: Instala [Visual Studio](https://visualstudio.microsoft.com/downloads/) con las siguientes *workloads*:
+    *   **Desarrollo de escritorio con C++**
+    *   **Desarrollo de escritorio .NET**
+    *   **Desarrollo de aplicaciones WinUI**
 
 2.  **WebView2 Runtime**: Asegúrate de tener instalado el [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (generalmente preinstalado en Windows 10/11).
 
 ## Ayudante de Windows (Extensión de Compartir)
 
 :::tip
-Toda esta sección es opcional. Si no necesitas la funcionalidad nativa de "Compartir en" en Windows, puedes omitir esto y proceder directamente a la sección [Compilar la Aplicación Principal](#compilar-la-aplicación-principal).
+Toda esta sección es opcional. Si no necesitas la funcionalidad nativa de "Compartir en" en Windows, puedes omitir esto y proceder directamente a la sección [Compilar la aplicación principal](#compilar-la-aplicación-principal).
 :::
 
-Miku Push! para Windows incluye una aplicación auxiliar que proporciona una experiencia nativa de "Compartir en", similar a una extensión de compartir en macOS.
+*Miku Push!* para Windows incluye una aplicación auxiliar que proporciona una experiencia nativa de "Compartir en", similar a la extensión de compartir en macOS.
 Este ayudante es una aplicación .NET separada que debe compilarse e instalarse de forma independiente.
 
-### 1. Crea un Certificado Autofirmado
+### 1. Crea un certificado autofirmado
 
-Para instalar el paquete MSIX del ayudante, este debe estar firmado. Puedes crear un certificado autofirmado para el desarrollo local usando PowerShell.
+Para instalar el paquete MSIX del ayudante, este debe estar firmado. Puedes crear un certificado autofirmado desde la PowerShell.
 
-Primero, crea el certificado:
 ```powershell
 New-SelfSignedCertificate `
     -Type CodeSigningCert `
     -KeyUsage DigitalSignature `
     -CertStoreLocation "Cert:\CurrentUser\My" `
-    -Subject "CN=Miku Push! Team, O=Miku Push! Team, C=ES" `
-    -FriendlyName "Miku Push! Team"
+    -Subject "CN=*Miku Push!* Team, O=*Miku Push!* Team, C=ES" `
+    -FriendlyName "*Miku Push!* Team"
 ```
 
-A continuación, obtén la huella digital del certificado y expórtalo a un archivo PFX. Reemplaza `<Tu Contraseña>` con una contraseña segura de tu elección.
+A continuación, obtén la huella digital del certificado y expórtalo a un archivo PFX. Reemplaza `<Tu Contraseña>` con una contraseña segura a tu elección.
+
 ```powershell
-$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*Miku Push! Team*" } | Select-Object -ExpandProperty Thumbprint
+$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "**Miku Push!* Team*" } | Select-Object -ExpandProperty Thumbprint
 $password = ConvertTo-SecureString -String <Tu Contraseña> -Force -AsPlainText
 Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath MikuPushCert.pfx -Password $password
 ```
@@ -49,7 +49,7 @@ Finalmente, confía en el certificado exportado. Debes **ejecutar este comando c
 Import-PfxCertificate -FilePath MikuPushCert.pfx -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $password
 ```
 
-### 2. Compila el Paquete MSIX Firmado
+### 2. Compila el paquete MSIX firmado
 
 Desde la raíz del repositorio `mikupush`, ejecuta el siguiente comando `dotnet publish`. Recuerda reemplazar `<Tu Contraseña>` con la misma contraseña que usaste al crear el certificado.
 
@@ -69,18 +69,18 @@ dotnet publish `
     -p:PackageCertificatePassword="<Tu Contraseña>"
 ```
 
-### 3. Instala el Paquete MSIX
+### 3. Instala el paquete MSIX
 
 El instalador (`.msixbundle`) se generará en la carpeta `helpers/windows-helpers/AppPackages/windows-helpers_*`. Puedes instalarlo con el siguiente comando de PowerShell:
 ```powershell
 Add-AppxPackage -Path .\AppPackages\windows-helpers_*\windows-helpers_*.msixbundle
 ```
 
-## Compilar la Aplicación Principal
+## Compilar la aplicación principal
 
-Este proceso compila la aplicación principal de Tauri.
+Este proceso compila la aplicación principal.
 
-### Compilación de Producción
+### Compilación de producción
 
 Para compilar los binarios e instaladores de producción optimizados (`.msi`, `.exe`) para Windows:
 
@@ -96,9 +96,9 @@ npm run tauri build -- --debug
 
 Los ejecutables e instaladores resultantes se ubicarán en `src-tauri/target/release/bundle/`.
 
-### Modo de Desarrollo
+### Modo desarrollo
 
-Para ejecutar la aplicación en modo de desarrollo con recarga en caliente:
+Para ejecutar la aplicación en modo de desarrollo con *Hot Module Reloading (HMR)*:
 
 ```bash
 npm run tauri dev

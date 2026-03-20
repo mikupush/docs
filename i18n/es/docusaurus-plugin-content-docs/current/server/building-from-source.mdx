@@ -2,9 +2,9 @@
 sidebar_position: 3
 ---
 
-# Compilando desde la Fuente
+# Compilando desde el codigo fuente
 
-Esta guía explica cómo compilar el servidor Miku Push! desde la fuente en Linux y producir un binario, un paquete `.deb` o un archivo `.tar.gz`.
+Esta guía explica cómo compilar el servidor *Miku Push!* desde el codigo fuente en Linux y producir un binario, un paquete `.deb` o un archivo `.tar.gz`.
 
 ## Prerrequisitos
 
@@ -18,32 +18,32 @@ Necesitas tener instaladas las siguientes herramientas:
 | git | | Clona el repositorio. |
 | dpkg | (preinstalado en Debian/Ubuntu) | Solo se requiere para construir el paquete `.deb`. |
 
-## Clonar el Repositorio
+## Clonar el repositorio
 
 ```bash
 git clone https://github.com/mikupush/server.git
 cd server
 ```
 
-## Instalar Dependencias de JavaScript
+## Instalar dependencias de JavaScript
 
 ```bash
 npm install
 ```
 
-## Construir
+## Compilar
 
-El proyecto usa un `Makefile` que orquesta tanto la construcción de la interfaz de usuario web como la del binario de Rust. Hay dos perfiles de construcción disponibles: **debug** y **release**.
+El proyecto usa un `Makefile` que orquesta tanto la compilación de la interfaz de usuario web como la del binario. Hay dos perfiles de compilación disponibles: **debug** y **release**.
 
-### Solo Binario
+### Solo binario
 
 Para compilar solo el binario del servidor:
 
 ```bash
-# Construcción de depuración (compilación más rápida, incluye símbolos de depuración)
+# Compilación de depuración (compilación más rápida, incluye símbolos de depuración)
 cargo build
 
-# Construcción de lanzamiento (optimizada)
+# Compilación de lanzamiento (optimizada)
 cargo build --release
 ```
 
@@ -55,10 +55,10 @@ El binario resultante estará en:
 | Release | `target/release/mikupush-server` |
 
 :::info
-El binario por sí solo no es suficiente para ejecutar el servidor con la interfaz de usuario web. También necesitas construir la interfaz de usuario web (ver a continuación) para que el servidor pueda servir los archivos estáticos y las plantillas.
+El binario por sí solo no es suficiente para ejecutar el servidor con la interfaz de usuario web. También necesitas compilar la interfaz de usuario web (ver a continuación) para que el servidor pueda servir los archivos estáticos y las plantillas.
 :::
 
-### Interfaz de Usuario Web
+### Interfaz de usuario web
 
 Para construir la interfaz de usuario web (Astro):
 
@@ -68,9 +68,9 @@ npm run build
 
 Esto genera el directorio `dist/` que contiene los activos estáticos y las plantillas HTML.
 
-### Construcción Completa (Binario + Interfaz de Usuario Web + Paquetes)
+### Compilación completa del paquete
 
-El `Makefile` proporciona objetivos que construyen todo y producen paquetes distribuibles:
+El `Makefile` proporciona *targets* que construyen todo y producen paquetes distribuibles:
 
 ```bash
 # Paquetes de depuración
@@ -80,15 +80,15 @@ make linux-debug
 make linux-release
 ```
 
-Estos objetivos se ejecutan, en orden:
+Estos *targets* se ejecutan, en orden:
 1. `npm run build` — construye la interfaz de usuario web en `dist/`.
 2. `cargo build` — compila el binario del servidor.
 3. `scripts/deb-package.sh` — crea el paquete `.deb`.
 4. `scripts/tar-package.sh` — crea el archivo `.tar.gz`.
 
-## Artefactos de Salida
+## Artefactos de salida
 
-Después de una construcción completa, los archivos generados se encuentran en `target/<profile>/bundle/`:
+Después de una compilación completa, los archivos generados se encuentran en `target/<profile>/bundle/`:
 
 | Artefacto | Ruta |
 | :--- | :--- |
@@ -98,7 +98,7 @@ Después de una construcción completa, los archivos generados se encuentran en 
 
 Donde `<profile>` es `debug` o `release`, `<version>` se lee del archivo `VERSION`, y `<arch>` es la arquitectura de tu sistema (p.ej. `amd64`, `arm64`).
 
-### Qué hay Dentro de Cada Paquete
+### ¿Qué hay dentro de cada paquete?
 
 El **paquete `.deb`** instala los archivos en las rutas estándar del sistema:
 
@@ -107,7 +107,7 @@ El **paquete `.deb`** instala los archivos en las rutas estándar del sistema:
 | Binario del servidor | `/usr/bin/mikupush-server` |
 | Configuración | `/etc/io.mikupush.server/config.yaml` |
 | Interfaz de usuario web | `/usr/share/io.mikupush.server/dist/` |
-| Servicio systemd | `/etc/systemd/system/mikupush-server.service` |
+| Servicio Systemd | `/etc/systemd/system/mikupush-server.service` |
 
 El **archivo `.tar.gz`** contiene todos los archivos en una estructura plana, listos para ser extraídos en cualquier directorio:
 
@@ -116,13 +116,13 @@ El **archivo `.tar.gz`** contiene todos los archivos en una estructura plana, li
 | `mikupush-server` | Binario del servidor. |
 | `config.yaml` | Archivo de configuración por defecto. |
 | `dist/` | Archivos estáticos y plantillas de la interfaz de usuario web precompilados. |
-| `mikupush-server.service` | Archivo de unidad de systemd. |
+| `mikupush-server.service` | Archivo de unidad de Systemd. |
 
 Para instrucciones de instalación usando estos artefactos, consulta la página de [Instalación](./installation.mdx).
 
 ## Imagen de Docker
 
-También puedes construir la imagen de Docker localmente. El `Dockerfile` usa una construcción de múltiples etapas: una etapa compila el binario de Rust, otra construye la interfaz de usuario web con Node.js, y la etapa final produce una imagen mínima basada en `debian:bookworm-slim`.
+También puedes construir la imagen de Docker localmente. El `Dockerfile` usa una construcción de múltiples etapas: una etapa compila el binario, otra construye la interfaz de usuario web con Node.js, y la etapa final produce una imagen mínima basada en `debian:bookworm-slim`.
 
 Desde la raíz del repositorio:
 

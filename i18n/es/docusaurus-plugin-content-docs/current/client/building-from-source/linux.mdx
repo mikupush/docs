@@ -27,11 +27,11 @@ sudo apt install libwebkit2gtk-4.1-dev
 
 *(Para otras distribuciones, consulta los [prerrequisitos de Tauri para Linux](https://v2.tauri.app/start/prerequisites/#linux) e instala los paquetes equivalentes).*
 
-## Compila la Aplicación
+## Compila la aplicación
 
 Puedes usar la CLI de Tauri a través de npm para compilar el proyecto.
 
-### Compilación de Producción
+### Compilación de producción
 
 Para compilar los binarios y paquetes de producción optimizados (`.deb`, `.rpm`) para Linux:
 
@@ -47,9 +47,9 @@ npm run tauri build -- --debug
 
 Los binarios y paquetes resultantes se ubicarán en `src-tauri/target/release/bundle/`.
 
-### Modo de Desarrollo
+### Modo desarrollo
 
-Para ejecutar la aplicación en modo de desarrollo con recarga en caliente:
+Para ejecutar la aplicación en modo de desarrollo con *Hot Module Reloading (HMR)*:
 
 ```bash
 npm run tauri dev

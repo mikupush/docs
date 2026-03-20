@@ -20,7 +20,7 @@ title: Windows
 This entire section is optional. If you do not need the native "Share to" functionality in Windows, you can skip this and proceed directly to the [Build the Main Application](#build-the-main-application) section.
 :::
 
-Miku Push! for Windows includes a helper application that provides a native 
+*Miku Push!* for Windows includes a helper application that provides a native 
 "Share to" experience, similar to a share extension on macOS. 
 This helper is a separate .NET application that must be built and installed independently.
 
@@ -34,13 +34,13 @@ New-SelfSignedCertificate `
     -Type CodeSigningCert `
     -KeyUsage DigitalSignature `
     -CertStoreLocation "Cert:\CurrentUser\My" `
-    -Subject "CN=Miku Push! Team, O=Miku Push! Team, C=ES" `
-    -FriendlyName "Miku Push! Team"
+    -Subject "CN=*Miku Push!* Team, O=*Miku Push!* Team, C=ES" `
+    -FriendlyName "*Miku Push!* Team"
 ```
 
 Next, get the certificate's thumbprint and export it to a PFX file. Replace `<Your Password>` with a secure password of your choice.
 ```powershell
-$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*Miku Push! Team*" } | Select-Object -ExpandProperty Thumbprint
+$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "**Miku Push!* Team*" } | Select-Object -ExpandProperty Thumbprint
 $password = ConvertTo-SecureString -String <Your Password> -Force -AsPlainText
 Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath MikuPushCert.pfx -Password $password
 ```

@@ -7,29 +7,29 @@ import TabItem from '@theme/TabItem';
 
 # Configuración
 
-El servidor Miku Push! es altamente configurable. Puedes usar un archivo YAML (`config.yaml`), variables de entorno o confiar en los valores predeterminados incorporados.
+El servidor *Miku Push!* es altamente configurable. Puedes usar un archivo YAML (`config.yaml`), variables de entorno o confiar en los valores predeterminados incorporados.
 
-## Prioridad de Configuración
+## Prioridad de configuración
 
 Cuando el servidor se inicia, resuelve los valores de configuración en el siguiente orden de precedencia (de mayor a menor):
 
 1.  **Variables de Entorno**: Si una variable está establecida en el entorno, siempre tendrá precedencia sobre cualquier otra fuente.
 2.  **Archivo YAML (`config.yaml`)**: Si no se encuentra ninguna variable de entorno, el servidor busca el valor en el archivo de configuración.
-3.  **Valores Predeterminados Incorporados**: Si una configuración falta tanto en las variables de entorno como en el archivo YAML, el servidor utiliza su valor predeterminado interno.
+3.  **Valores predeterminados incorporados**: Si una configuración falta tanto en las variables de entorno como en el archivo YAML, el servidor utiliza su valor predeterminado interno.
 
 :::info Ejemplo de Precedencia
 Si defines `port: 8080` en `config.yaml` pero también estableces la variable de entorno `MIKU_PUSH_SERVER_PORT=9000`, el servidor escuchará en el puerto **9000**.
 :::
 
-## Archivo de Configuración
+## Archivo de configuración
 
-Puedes especificar la ruta de un archivo de configuración explícitamente con la bandera `-c` / `--config`:
+Puedes especificar la ruta de un archivo de configuración explícitamente con la opción `-c` / `--config`:
 
 ```bash
 mikupush-server --config /path/to/config.yaml
 ```
 
-Si no se proporciona ninguna bandera, el servidor busca un archivo `config.yaml` en las siguientes ubicaciones (en orden) y usa el **primero que encuentre**:
+Si no se proporciona ninguna la opción `-c`, el servidor busca un archivo `config.yaml` en las siguientes ubicaciones (en orden) y usa el **primero que encuentre**:
 
 <Tabs groupId="config-file-platform">
   <TabItem value="linux" label="Linux" default>
@@ -58,7 +58,7 @@ Si no se proporciona ninguna bandera, el servidor busca un archivo `config.yaml`
 
 Si no se encuentra ningún archivo en ninguna de estas ubicaciones, el servidor se inicia usando solo variables de entorno y valores predeterminados incorporados.
 
-## Ajustes del Servidor
+## Ajustes del servidor
 
 Ajustes generales para el servidor de la API HTTP.
 
@@ -78,9 +78,9 @@ server:
 | :--- | :--- | :---: | :--- |
 | `server.host` | `0.0.0.0` | No | Dirección IP o nombre de host donde el servidor escuchará las conexiones. |
 | `server.port` | `8080` | No | Puerto TCP del servidor. |
-| `server.static_directory` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del ejecutable) o absoluta. |
+| `server.static_directory` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
 | `server.static_base_path` | `/assets` | No | Ruta base de la URL para servir archivos estáticos. |
-| `server.templates_directory` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del ejecutable) o absoluta. |
+| `server.templates_directory` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
 
   </TabItem>
   <TabItem value="env" label="Variables de Entorno">
@@ -97,14 +97,14 @@ MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
 | :--- | :--- | :---: | :--- |
 | `MIKU_PUSH_SERVER_HOST` | `0.0.0.0` | No | Dirección IP o nombre de host donde el servidor escuchará las conexiones. |
 | `MIKU_PUSH_SERVER_PORT` | `8080` | No | Puerto TCP del servidor. |
-| `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del ejecutable) o absoluta. |
+| `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
 | `MIKU_PUSH_SERVER_STATIC_BASE_PATH` | `/assets` | No | Ruta base de la URL para servir archivos estáticos. |
-| `MIKU_PUSH_SERVER_TEMPLATES_DIR` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del ejecutable) o absoluta. |
+| `MIKU_PUSH_SERVER_TEMPLATES_DIR` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
 
   </TabItem>
 </Tabs>
 
-## Base de Datos (PostgreSQL)
+## Base de datos (PostgreSQL)
 
 Ajustes de conexión para tu base de datos PostgreSQL.
 
@@ -150,7 +150,7 @@ MIKU_PUSH_DATABASE_PASSWORD=postgres
   </TabItem>
 </Tabs>
 
-## Subida de Archivos
+## Subida de archivos
 
 Configura cómo el servidor maneja las subidas de archivos y la expiración.
 
@@ -172,7 +172,7 @@ upload:
 | Clave | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
 | `upload.max_size` | Sin límite | No | Tamaño máximo de subida permitido en bytes. Si no se establece, no hay límite. |
-| `upload.directory` | `data` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del ejecutable) o absoluta. |
+| `upload.directory` | `data` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
 | `upload.expires_in_seconds` | Sin expiración | No | Tiempo de expiración para los archivos subidos en segundos. Si no se establece, los archivos no expiran. |
 | `upload.expiration_cleanup_interval_seconds` | `3600` | No | Intervalo en segundos para comprobar y eliminar archivos expirados. |
 
@@ -189,16 +189,16 @@ MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL=3600
 | Variable | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
 | `MIKU_PUSH_UPLOAD_MAX_SIZE` | Sin límite | No | Tamaño máximo de subida permitido en bytes. Si no se establece, no hay límite. |
-| `MIKU_PUSH_UPLOAD_DIRECTORY` | `data` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del ejecutable) o absoluta. |
+| `MIKU_PUSH_UPLOAD_DIRECTORY` | `data` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
 | `MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS` | Sin expiración | No | Tiempo de expiración para los archivos subidos en segundos. Si no se establece, los archivos no expiran. |
 | `MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL` | `3600` | No | Intervalo en segundos para comprobar y eliminar archivos expirados. |
 
   </TabItem>
 </Tabs>
 
-## Registro
+## Logging
 
-Controla la verbosidad y la salida de los registros del servidor.
+Controla la verbosidad y la salida de los logs del servidor.
 
 <Tabs groupId="config-format">
   <TabItem value="yaml" label="YAML" default>
@@ -214,9 +214,9 @@ log:
 | Clave | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
 | `log.level` | `info` | No | Nivel de registro. Valores posibles: `trace`, `debug`, `info`, `warn`, `error`. |
-| `log.file_prefix` | `server` | No | Prefijo del nombre del archivo de registro. Por ejemplo, `server` produce archivos como `server.2025-12-11-14.log`. |
-| `log.directory` | Específico de la plataforma | No | Directorio de registro. Predeterminado a `/var/log/io.mikupush.server` en Linux, `~/Library/Logs/io.mikupush.server` en macOS, y `%LOCALAPPDATA%\io.mikupush.server\logs` en Windows. |
-| `log.json` | `false` | No | Si es `true`, la salida del registro usa formato JSON. |
+| `log.file_prefix` | `server` | No | Prefijo del nombre del archivo de logs. Por ejemplo, `server` produce archivos como `server.2025-12-11-14.log`. |
+| `log.directory` | Específico de la plataforma | No | Directorio donde se almacenarán los logs. Predeterminado a `/var/log/io.mikupush.server` en Linux, `~/Library/Logs/io.mikupush.server` en macOS, y `%LOCALAPPDATA%\io.mikupush.server\logs` en Windows. |
+| `log.json` | `false` | No | Si es `true`, la salida del log usa formato JSON. |
 
   </TabItem>
   <TabItem value="env" label="Variables de Entorno">
@@ -231,18 +231,18 @@ MIKU_PUSH_LOG_JSON=false
 | Variable | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
 | `MIKU_PUSH_LOG_LEVEL` | `info` | No | Nivel de registro. Valores posibles: `trace`, `debug`, `info`, `warn`, `error`. |
-| `MIKU_PUSH_LOG_FILE_PREFIX` | `server` | No | Prefijo del nombre del archivo de registro. Por ejemplo, `server` produce archivos como `server.2025-12-11-14.log`. |
-| `MIKU_PUSH_LOG_DIRECTORY` | Específico de la plataforma | No | Directorio de registro. Predeterminado a `/var/log/io.mikupush.server` en Linux, `~/Library/Logs/io.mikupush.server` en macOS, y `%LOCALAPPDATA%\io.mikupush.server\logs` en Windows. |
-| `MIKU_PUSH_LOG_JSON` | `false` | No | Si es `true`, la salida del registro usa formato JSON. |
+| `MIKU_PUSH_LOG_FILE_PREFIX` | `server` | No | Prefijo del nombre del archivo de logs. Por ejemplo, `server` produce archivos como `server.2025-12-11-14.log`. |
+| `MIKU_PUSH_LOG_DIRECTORY` | Específico de la plataforma | No | Directorio donde se almacenarán los logs. Predeterminado a `/var/log/io.mikupush.server` en Linux, `~/Library/Logs/io.mikupush.server` en macOS, y `%LOCALAPPDATA%\io.mikupush.server\logs` en Windows. |
+| `MIKU_PUSH_LOG_JSON` | `false` | No | Si es `true`, la salida del log usa formato JSON. |
 
   </TabItem>
 </Tabs>
 
-## Modo de Depuración
+## Modo de depuración
 
 Estos ajustes están destinados al **desarrollo local** de la interfaz de usuario web.
 
-Cuando el modo de depuración está habilitado, el servidor obtiene plantillas HTML de un servidor de desarrollo [Astro](https://astro.build/) en ejecución en lugar de leerlas del sistema de archivos local. Esto te permite trabajar en la interfaz de usuario web con recarga en caliente mientras el servidor de Rust maneja las solicitudes de la API e inyecta los metadatos necesarios en las plantillas antes de servirlas al navegador.
+Cuando el modo de depuración está habilitado, el servidor obtiene plantillas HTML del dev server de [Astro](https://astro.build/) que esta en ejecución en lugar de leerlas del sistema de ficheros local. Esto te permite trabajar en la interfaz de usuario web con *Hot Module Reloading (HMR)* mientras el servidor maneja las solicitudes de la API e inyecta los metadatos necesarios en las plantillas antes de servirlas al navegador.
 
 Cuando el modo de depuración está deshabilitado (el valor predeterminado), las plantillas se leen del directorio especificado por `server.templates_directory`.
 
@@ -257,8 +257,8 @@ debug:
 
 | Clave | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
-| `debug.enable` | `false` | No | Habilita el modo de depuración. Cuando está habilitado, el servidor obtiene plantillas del servidor de desarrollo de Astro en lugar de archivos locales. |
-| `debug.astro_dev_server` | `http://localhost:4321/` | No | URL del servidor de desarrollo de Astro. Solo se usa cuando `debug.enable` es `true`. |
+| `debug.enable` | `false` | No | Habilita el modo de depuración. Cuando está habilitado, el servidor obtiene plantillas del dev server de Astro en lugar de archivos locales. |
+| `debug.astro_dev_server` | `http://localhost:4321/` | No | URL del dev server de Astro. Solo se usa cuando `debug.enable` es `true`. |
 
   </TabItem>
   <TabItem value="env" label="Variables de Entorno">
@@ -270,8 +270,8 @@ MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER=http://localhost:4321/
 
 | Variable | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
-| `MIKU_PUSH_DEBUG_ENABLE` | `false` | No | Habilita el modo de depuración. Cuando está habilitado, el servidor obtiene plantillas del servidor de desarrollo de Astro en lugar de archivos locales. |
-| `MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER` | `http://localhost:4321/` | No | URL del servidor de desarrollo de Astro. Solo se usa cuando `debug.enable` es `true`. |
+| `MIKU_PUSH_DEBUG_ENABLE` | `false` | No | Habilita el modo de depuración. Cuando está habilitado, el servidor obtiene plantillas del dev server de Astro en lugar de archivos locales. |
+| `MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER` | `http://localhost:4321/` | No | URL del dev server de Astro. Solo se usa cuando `debug.enable` es `true`. |
 
   </TabItem>
 </Tabs>
