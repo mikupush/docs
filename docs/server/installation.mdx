@@ -3,10 +3,11 @@ sidebar_position: 1
 ---
 
 import LatestReleaseLinks from '@site/src/components/LatestReleaseLinks';
+import LatestReleaseTarLinks from '@site/src/components/LatestReleaseTarLinks';
 
 # Installation
 
-In this guide, you will learn how to install the MikuPush server using Docker Compose or natively using a Debian package.
+In this guide, you will learn how to install the MikuPush server using Docker Compose, a Debian package, or a generic tarball for any Linux distribution.
 
 ## Prerequisites
 
@@ -77,7 +78,7 @@ Run the following command to start the containers in the background:
 docker compose up -d
 ```
 
-The server will be available at `http://localhost:8080`.
+The server will be available at `http://localhost:8080`. You can confirm it is running by following the [Verify](#6-verify) steps.
 
 ---
 
@@ -114,4 +115,136 @@ sudo systemctl status mikupush-server
 
 # Restart after configuration changes
 sudo systemctl restart mikupush-server
+```
+
+To confirm the server is responding, see the [Verify](#6-verify) steps.
+
+---
+
+## Generic Linux Installation (tar.gz)
+
+For any Linux distribution with **systemd**, you can install MikuPush from the compressed tarball available on the [GitHub releases page](https://github.com/mikupush/server/releases).
+
+The archive contains the following files:
+
+| File | Description |
+| :--- | :--- |
+| `mikupush-server` | Server binary. |
+| `config.yaml` | Default configuration file. |
+| `dist/` | Pre-built web UI static files and templates. |
+| `mikupush-server.service` | systemd unit file. |
+
+### 1. Download and Extract
+
+Create the installation directory and extract the archive:
+
+```bash
+sudo mkdir -p /opt/mikupush-server
+```
+
+<LatestReleaseTarLinks />
+
+### 2. Create a Dedicated User
+
+Create a system user to run the service:
+
+```bash
+sudo useradd -r -s /usr/sbin/nologin mikupush
+```
+
+### 3. Create Data and Log Directories
+
+```bash
+sudo mkdir -p /var/lib/io.mikupush.server/data
+sudo mkdir -p /var/log/io.mikupush.server
+
+sudo chown -R mikupush:mikupush /var/lib/io.mikupush.server
+sudo chown -R mikupush:mikupush /var/log/io.mikupush.server
+sudo chown -R mikupush:mikupush /opt/mikupush-server
+```
+
+### 4. Configuration
+
+Edit the included `config.yaml` to point to the correct paths and configure your database connection:
+
+```bash
+sudo nano /opt/mikupush-server/config.yaml
+```
+
+Since the binary, templates and static files live under `/opt/mikupush-server`, update the paths accordingly:
+
+```yaml
+server:
+  static_directory: /opt/mikupush-server/dist/assets
+  templates_directory: /opt/mikupush-server/dist
+
+log:
+  directory: /var/log/io.mikupush.server
+
+upload:
+  directory: /var/lib/io.mikupush.server/data
+```
+
+For all available options, see the [Configuration](./configuration.mdx) page.
+
+### 5. Install the systemd Service
+
+Copy the included unit file and update `ExecStart` to point to the binary and config file:
+
+```bash
+sudo cp /opt/mikupush-server/mikupush-server.service /etc/systemd/system/mikupush-server.service
+```
+
+Edit the unit file to match the installation path:
+
+```bash
+sudo nano /etc/systemd/system/mikupush-server.service
+```
+
+```ini
+[Unit]
+Description=The Miku Push! server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/opt/mikupush-server/mikupush-server --config /opt/mikupush-server/config.yaml
+Restart=on-failure
+User=mikupush
+Group=mikupush
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then enable and start the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable mikupush-server
+sudo systemctl start mikupush-server
+```
+
+### 6. Verify
+
+Check that the service is running:
+
+```bash
+sudo systemctl status mikupush-server
+```
+
+Then confirm the server is responding:
+
+```bash
+curl -i -H 'Accept: application/json' http://localhost:8080/health
+```
+
+You should see a response like:
+
+```
+HTTP/1.1 200 OK
+content-type: application/json
+content-length: 15
+
+{"status":"up"}
 ```
