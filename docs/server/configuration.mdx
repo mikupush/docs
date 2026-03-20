@@ -21,11 +21,48 @@ When the server starts, it resolves configuration values in the following order 
 If you define `port: 8080` in `config.yaml` but also set the environment variable `MIKU_PUSH_SERVER_PORT=9000`, the server will listen on port **9000**.
 :::
 
+## Configuration File
+
+You can specify a configuration file path explicitly with the `-c` / `--config` flag:
+
+```bash
+mikupush-server --config /path/to/config.yaml
+```
+
+If no flag is provided, the server searches for a `config.yaml` file in the following locations (in order) and uses the **first one found**:
+
+<Tabs groupId="config-file-platform">
+  <TabItem value="linux" label="Linux" default>
+
+1. `config.yaml` (working directory)
+2. `~/.io.mikupush.server/config.yaml`
+3. `~/.config/io.mikupush.server/config.yaml`
+4. `/etc/io.mikupush.server/config.yaml`
+
+  </TabItem>
+  <TabItem value="macos" label="macOS">
+
+1. `config.yaml` (working directory)
+2. `~/.io.mikupush.server/config.yaml`
+3. `~/.config/io.mikupush.server/config.yaml`
+4. `~/Library/Application Support/io.mikupush.server/config.yaml`
+
+  </TabItem>
+  <TabItem value="windows" label="Windows">
+
+1. `config.yaml` (working directory)
+2. `%LOCALAPPDATA%\io.mikupush.server\config.yaml`
+
+  </TabItem>
+</Tabs>
+
+If no file is found in any of these locations, the server starts using only environment variables and built-in defaults.
+
 ## Server Settings
 
 General settings for the HTTP API server.
 
-<Tabs>
+<Tabs groupId="config-format">
   <TabItem value="yaml" label="YAML" default>
 
 ```yaml
@@ -36,6 +73,14 @@ server:
   static_base_path: /assets
   templates_directory: dist
 ```
+
+| Key | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `server.host` | `0.0.0.0` | No | IP address or hostname where the server will listen for connections. |
+| `server.port` | `8080` | No | Server TCP port. |
+| `server.static_directory` | `dist/assets` | No | Directory with static assets. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `server.static_base_path` | `/assets` | No | URL base path for serving static files. |
+| `server.templates_directory` | `dist` | No | Directory with HTML templates used by the web UI. Can be a relative path (resolved from the executable's working directory) or absolute. |
 
   </TabItem>
   <TabItem value="env" label="Environment Variables">
@@ -48,22 +93,22 @@ MIKU_PUSH_SERVER_STATIC_BASE_PATH=/assets
 MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
 ```
 
+| Variable | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `MIKU_PUSH_SERVER_HOST` | `0.0.0.0` | No | IP address or hostname where the server will listen for connections. |
+| `MIKU_PUSH_SERVER_PORT` | `8080` | No | Server TCP port. |
+| `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directory with static assets. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `MIKU_PUSH_SERVER_STATIC_BASE_PATH` | `/assets` | No | URL base path for serving static files. |
+| `MIKU_PUSH_SERVER_TEMPLATES_DIR` | `dist` | No | Directory with HTML templates used by the web UI. Can be a relative path (resolved from the executable's working directory) or absolute. |
+
   </TabItem>
 </Tabs>
-
-| YAML Key | Env Variable | Default | Required | Description |
-| :--- | :--- | :--- | :---: | :--- |
-| `server.host` | `MIKU_PUSH_SERVER_HOST` | `0.0.0.0` | No | IP address or hostname where the server will listen for connections. |
-| `server.port` | `MIKU_PUSH_SERVER_PORT` | `8080` | No | Server TCP port. |
-| `server.static_directory` | `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directory with static assets. Can be a relative or absolute path. |
-| `server.static_base_path` | `MIKU_PUSH_SERVER_STATIC_BASE_PATH` | `/assets` | No | URL base path for serving static files. |
-| `server.templates_directory` | `MIKU_PUSH_SERVER_TEMPLATES_DIR` | `dist` | No | Directory with HTML templates used by the web UI. Can be a relative or absolute path. |
 
 ## Database (PostgreSQL)
 
 Connection settings for your PostgreSQL database.
 
-<Tabs>
+<Tabs groupId="config-format">
   <TabItem value="yaml" label="YAML" default>
 
 ```yaml
@@ -74,6 +119,14 @@ database:
   user: postgres
   password: postgres
 ```
+
+| Key | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `database.host` | `localhost` | No | Hostname or IP of the PostgreSQL server. |
+| `database.port` | `5432` | No | Port of the PostgreSQL server. |
+| `database.database` | `postgres` | No | Name of the database to connect to. |
+| `database.user` | `postgres` | No | Database user. |
+| `database.password` | `postgres` | No | Database user password. |
 
   </TabItem>
   <TabItem value="env" label="Environment Variables">
@@ -86,22 +139,22 @@ MIKU_PUSH_DATABASE_USER=postgres
 MIKU_PUSH_DATABASE_PASSWORD=postgres
 ```
 
+| Variable | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `MIKU_PUSH_DATABASE_HOST` | `localhost` | No | Hostname or IP of the PostgreSQL server. |
+| `MIKU_PUSH_DATABASE_PORT` | `5432` | No | Port of the PostgreSQL server. |
+| `MIKU_PUSH_DATABASE_NAME` | `postgres` | No | Name of the database to connect to. |
+| `MIKU_PUSH_DATABASE_USER` | `postgres` | No | Database user. |
+| `MIKU_PUSH_DATABASE_PASSWORD` | `postgres` | No | Database user password. |
+
   </TabItem>
 </Tabs>
-
-| YAML Key | Env Variable | Default | Required | Description |
-| :--- | :--- | :--- | :---: | :--- |
-| `database.host` | `MIKU_PUSH_DATABASE_HOST` | `localhost` | No | Hostname or IP of the PostgreSQL server. |
-| `database.port` | `MIKU_PUSH_DATABASE_PORT` | `5432` | No | Port of the PostgreSQL server. |
-| `database.database` | `MIKU_PUSH_DATABASE_NAME` | `postgres` | No | Name of the database to connect to. |
-| `database.user` | `MIKU_PUSH_DATABASE_USER` | `postgres` | No | Database user. |
-| `database.password` | `MIKU_PUSH_DATABASE_PASSWORD` | `postgres` | No | Database user password. |
 
 ## File Uploads
 
 Configure how the server handles file uploads and expiration.
 
-<Tabs>
+<Tabs groupId="config-format">
   <TabItem value="yaml" label="YAML" default>
 
 ```yaml
@@ -116,6 +169,13 @@ upload:
   expiration_cleanup_interval_seconds: 3600
 ```
 
+| Key | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `upload.max_size` | No limit | No | Maximum allowed upload size in bytes. If not set, there is no limit. |
+| `upload.directory` | `data` | No | Directory where uploaded files are stored. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `upload.expires_in_seconds` | No expiration | No | Expiration time for uploaded files in seconds. If not set, files do not expire. |
+| `upload.expiration_cleanup_interval_seconds` | `3600` | No | Interval in seconds to check and delete expired files. |
+
   </TabItem>
   <TabItem value="env" label="Environment Variables">
 
@@ -126,21 +186,21 @@ MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS=604800
 MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL=3600
 ```
 
+| Variable | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `MIKU_PUSH_UPLOAD_MAX_SIZE` | No limit | No | Maximum allowed upload size in bytes. If not set, there is no limit. |
+| `MIKU_PUSH_UPLOAD_DIRECTORY` | `data` | No | Directory where uploaded files are stored. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS` | No expiration | No | Expiration time for uploaded files in seconds. If not set, files do not expire. |
+| `MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL` | `3600` | No | Interval in seconds to check and delete expired files. |
+
   </TabItem>
 </Tabs>
-
-| YAML Key | Env Variable | Default | Required | Description |
-| :--- | :--- | :--- | :---: | :--- |
-| `upload.max_size` | `MIKU_PUSH_UPLOAD_MAX_SIZE` | No limit | No | Maximum allowed upload size in bytes. If not set, there is no limit. |
-| `upload.directory` | `MIKU_PUSH_UPLOAD_DIRECTORY` | `data` | No | Directory where uploaded files are stored. Can be a relative or absolute path. |
-| `upload.expires_in_seconds` | `MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS` | No expiration | No | Expiration time for uploaded files in seconds. If not set, files do not expire. |
-| `upload.expiration_cleanup_interval_seconds` | `MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL` | `3600` | No | Interval in seconds to check and delete expired files. |
 
 ## Logging
 
 Control the verbosity and output of the server logs.
 
-<Tabs>
+<Tabs groupId="config-format">
   <TabItem value="yaml" label="YAML" default>
 
 ```yaml
@@ -150,6 +210,13 @@ log:
   directory: /var/log/io.mikupush.server
   json: false
 ```
+
+| Key | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `log.level` | `info` | No | Log level. Possible values: `trace`, `debug`, `info`, `warn`, `error`. |
+| `log.file_prefix` | `server` | No | Log file name prefix. For example, `server` produces files like `server.2025-12-11-14.log`. |
+| `log.directory` | Platform-specific | No | Log directory. Defaults to `/var/log/io.mikupush.server` on Linux, `~/Library/Logs/io.mikupush.server` on macOS, and `%LOCALAPPDATA%\io.mikupush.server\logs` on Windows. |
+| `log.json` | `false` | No | If `true`, the log output uses JSON format. |
 
   </TabItem>
   <TabItem value="env" label="Environment Variables">
@@ -161,15 +228,15 @@ MIKU_PUSH_LOG_DIRECTORY=/var/log/io.mikupush.server
 MIKU_PUSH_LOG_JSON=false
 ```
 
+| Variable | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `MIKU_PUSH_LOG_LEVEL` | `info` | No | Log level. Possible values: `trace`, `debug`, `info`, `warn`, `error`. |
+| `MIKU_PUSH_LOG_FILE_PREFIX` | `server` | No | Log file name prefix. For example, `server` produces files like `server.2025-12-11-14.log`. |
+| `MIKU_PUSH_LOG_DIRECTORY` | Platform-specific | No | Log directory. Defaults to `/var/log/io.mikupush.server` on Linux, `~/Library/Logs/io.mikupush.server` on macOS, and `%LOCALAPPDATA%\io.mikupush.server\logs` on Windows. |
+| `MIKU_PUSH_LOG_JSON` | `false` | No | If `true`, the log output uses JSON format. |
+
   </TabItem>
 </Tabs>
-
-| YAML Key | Env Variable | Default | Required | Description |
-| :--- | :--- | :--- | :---: | :--- |
-| `log.level` | `MIKU_PUSH_LOG_LEVEL` | `info` | No | Log level. Possible values: `trace`, `debug`, `info`, `warn`, `error`. |
-| `log.file_prefix` | `MIKU_PUSH_LOG_FILE_PREFIX` | `server` | No | Log file name prefix. For example, `server` produces files like `server.2025-12-11-14.log`. |
-| `log.directory` | `MIKU_PUSH_LOG_DIRECTORY` | Platform-specific | No | Log directory. Defaults to `/var/log/io.mikupush.server` on Linux, `/usr/local/var/log/io.mikupush.server` on macOS, and `%LOCALAPPDATA%\io.mikupush.server\logs` on Windows. |
-| `log.json` | `MIKU_PUSH_LOG_JSON` | `false` | No | If `true`, the log output uses JSON format. |
 
 ## Debug Mode
 
@@ -179,7 +246,7 @@ When debug mode is enabled, the server fetches HTML templates from a running [As
 
 When debug mode is disabled (the default), templates are read from the directory specified by `server.templates_directory`.
 
-<Tabs>
+<Tabs groupId="config-format">
   <TabItem value="yaml" label="YAML" default>
 
 ```yaml
@@ -187,6 +254,11 @@ debug:
   enable: false
   astro_dev_server: http://localhost:4321/
 ```
+
+| Key | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `debug.enable` | `false` | No | Enable debug mode. When enabled, the server fetches templates from the Astro dev server instead of local files. |
+| `debug.astro_dev_server` | `http://localhost:4321/` | No | Astro development server URL. Only used when `debug.enable` is `true`. |
 
   </TabItem>
   <TabItem value="env" label="Environment Variables">
@@ -196,10 +268,10 @@ MIKU_PUSH_DEBUG_ENABLE=false
 MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER=http://localhost:4321/
 ```
 
+| Variable | Default | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `MIKU_PUSH_DEBUG_ENABLE` | `false` | No | Enable debug mode. When enabled, the server fetches templates from the Astro dev server instead of local files. |
+| `MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER` | `http://localhost:4321/` | No | Astro development server URL. Only used when `debug.enable` is `true`. |
+
   </TabItem>
 </Tabs>
-
-| YAML Key | Env Variable | Default | Required | Description |
-| :--- | :--- | :--- | :---: | :--- |
-| `debug.enable` | `MIKU_PUSH_DEBUG_ENABLE` | `false` | No | Enable debug mode. When enabled, the server fetches templates from the Astro dev server instead of local files. |
-| `debug.astro_dev_server` | `MIKU_PUSH_DEBUG_ASTRO_DEV_SERVER` | `http://localhost:4321/` | No | Astro development server URL. Only used when `debug.enable` is `true`. |
