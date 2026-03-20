@@ -1,0 +1,90 @@
+---
+sidebar_position: 2
+title: macOS
+---
+
+# Compilando en macOS
+
+## Requisitos
+
+Se recomienda instalar la aplicación Xcode completa desde la Mac App Store. Aunque las versiones más antiguas podrían funcionar, se recomienda Xcode 26 o posterior para garantizar la compatibilidad con los SDK más recientes.
+
+Después de instalar Xcode, asegúrate de que las herramientas de línea de comandos también estén configuradas ejecutando:
+
+```bash
+xcode-select --install
+```
+
+## Plugin de macOS (Extensión de Compartir)
+
+El cliente Miku Push! para macOS incluye una extensión de aplicación nativa (Extensión de Compartir) definida en la configuración de Tauri:
+
+```json
+"macOS": {
+  "files": {
+    "PlugIns/share.appex": "../helpers/macos-helpers/Build/Products/Release/share.appex"
+  }
+}
+```
+
+Esto significa que antes de compilar la aplicación principal, debes compilar los ayudantes de macOS para compilar la extensión de compartir.
+
+## Firma de Código
+
+Para compilar la extensión de compartir, necesitarás una cuenta de desarrollador de Apple válida y un perfil de aprovisionamiento. El script de compilación (`scripts/build-macos-helpers.sh`) utiliza las siguientes variables de entorno para la firma de código:
+
+:::tip
+Si no necesitas la Extensión de Compartir y quieres evitar el proceso de firma de código, puedes eliminar la entrada `files` de la sección `macOS` en tu archivo `tauri.conf.json`. Esto evitará que Tauri intente empaquetar la extensión. Luego puedes omitir el resto de esta sección e ir directamente a la sección [Compilando sin la Extensión de Compartir](#compilando-sin-la-extensión-de-compartir) a continuación.
+:::
+
+- `APPLE_SIGNING_IDENTITY`: Tu identidad de firma de Apple Development o Apple Distribution.
+- `PROVISIONING_PROFILE_SPECIFIER`: El nombre del perfil de aprovisionamiento a utilizar.
+- `APPLE_TEAM_ID`: Tu ID de equipo de desarrollador de Apple.
+
+Puedes crear un archivo `.env` en la raíz del repositorio `mikupush` con el siguiente contenido:
+
+```
+APPLE_SIGNING_IDENTITY="Apple Development: yourname@example.com (XXXXXXXXXX)"
+PROVISIONING_PROFILE_SPECIFIER="Your Provisioning Profile Name"
+APPLE_TEAM_ID="YOUR_TEAM_ID"
+```
+
+:::info
+Tu perfil de aprovisionamiento debe tener habilitada la capacidad **App Groups** para permitir la comunicación entre la aplicación principal y la extensión de compartir.
+:::
+
+## Compila la Aplicación
+
+### Compilación Completa de Producción
+
+Hemos proporcionado un objetivo de `Makefile` conveniente que compila tanto los ayudantes de macOS como la versión de lanzamiento del cliente.
+
+Ejecuta el siguiente comando para compilar los ayudantes nativos de macOS y la aplicación principal de Tauri para su lanzamiento:
+
+```bash
+make build-macos
+```
+
+Los paquetes de la aplicación y las imágenes de disco (`.dmg`) resultantes se ubicarán en `src-tauri/target/release/bundle/macos/`.
+
+### Compilando sin la Extensión de Compartir
+
+Si has eliminado la entrada `files` de `tauri.conf.json` como se mencionó anteriormente, ya no necesitas el comando `make build-macos`. Puedes compilar la aplicación usando los comandos estándar de la CLI de Tauri:
+
+- **Compilación de Lanzamiento**:
+  ```bash
+  npm run tauri build
+  ```
+
+- **Compilación de Depuración**:
+  ```bash
+  npm run tauri build -- --debug
+  ```
+
+### Modo de Desarrollo
+
+Si solo quieres ejecutar la aplicación en modo de desarrollo con recarga en caliente (sin compilar el paquete de lanzamiento):
+
+```bash
+npm run tauri dev
+```

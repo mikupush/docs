@@ -1,0 +1,8 @@
+{
+  "label": "Servidor",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "*Miku Push!* Server es el backend que impulsa el servicio de intercambio de archivos *Miku Push!*. Proporciona una API REST para subir, gestionar y descargar archivos a través de enlaces compartibles únicos."
+  }
+}

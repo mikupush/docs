@@ -1,0 +1,8 @@
+{
+  "label": "Cliente",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Miku Push! Client es la aplicación de escritorio para gestionar y subir archivos."
+  }
+}

@@ -1,0 +1,54 @@
+---
+sidebar_position: 1
+title: Resumen
+---
+
+# Compilando desde la Fuente
+
+Esta sección explica cómo compilar el cliente Miku Push! desde el código fuente para diferentes sistemas operativos.
+El cliente Miku Push! está construido con [Tauri](https://v2.tauri.app/), usando un backend de Rust con Diesel para la base de datos y un frontend web.
+
+## Prerrequisitos Comunes
+
+Independientemente de tu sistema operativo, necesitas tener instaladas las siguientes herramientas:
+
+| Herramienta | Versión | Propósito |
+| :--- | :--- | :--- |
+| [Rust](https://www.rust-lang.org/tools/install) | 1.88+ | Compila el backend de Tauri. |
+| [Node.js](https://nodejs.org/) | 22+ | Construye la interfaz de usuario web. |
+| npm | (incluido con Node.js) | Instala las dependencias de JavaScript. |
+| git | | Clona el repositorio. |
+
+## Clonar el Repositorio
+
+```bash
+git clone https://github.com/mikupush/mikupush.git
+cd mikupush
+```
+
+## Instalar Dependencias
+
+Instala las dependencias del frontend a través de npm:
+
+```bash
+npm install
+```
+
+## Configuración de Diesel
+
+El cliente usa [Diesel](https://diesel.rs/) como ORM con SQLite.
+Asegúrate de tener instalado `diesel_cli` para ejecutar migraciones de la base de datos si es necesario durante el desarrollo:
+
+```bash
+cargo install diesel_cli --no-default-features --features sqlite
+```
+
+*Nota: Para la característica de SQLite en Linux, debes tener instalado `libsqlite3-dev`. En Windows y macOS, SQLite suele estar incluido o es más fácil de configurar.*
+
+## Próximos Pasos
+
+Ahora que tienes los prerrequisitos comunes instalados, por favor selecciona tu sistema operativo para ver las instrucciones de compilación específicas:
+
+-   [Compilando en Windows](./windows.mdx)
+-   [Compilando en macOS](./macos.mdx)
+-   [Compilando en Linux](./linux.mdx)

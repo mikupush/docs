@@ -1,0 +1,56 @@
+---
+sidebar_position: 4
+title: Linux
+---
+
+# Compilando en Linux
+
+## Requisitos
+
+Necesitas instalar las siguientes dependencias del sistema para Tauri y Diesel (SQLite).
+
+Para **Debian/Ubuntu**:
+
+```bash
+sudo apt update
+sudo apt install libwebkit2gtk-4.1-dev 
+  build-essential 
+  curl 
+  wget 
+  file 
+  libxdo-dev 
+  libssl-dev 
+  libayatana-appindicator3-dev 
+  librsvg2-dev 
+  libsqlite3-dev
+```
+
+*(Para otras distribuciones, consulta los [prerrequisitos de Tauri para Linux](https://v2.tauri.app/start/prerequisites/#linux) e instala los paquetes equivalentes).*
+
+## Compila la Aplicación
+
+Puedes usar la CLI de Tauri a través de npm para compilar el proyecto.
+
+### Compilación de Producción
+
+Para compilar los binarios y paquetes de producción optimizados (`.deb`, `.rpm`) para Linux:
+
+```bash
+npm run tauri build
+```
+
+O ejecuta la compilación de depuración:
+
+```bash
+npm run tauri build -- --debug
+```
+
+Los binarios y paquetes resultantes se ubicarán en `src-tauri/target/release/bundle/`.
+
+### Modo de Desarrollo
+
+Para ejecutar la aplicación en modo de desarrollo con recarga en caliente:
+
+```bash
+npm run tauri dev
+```

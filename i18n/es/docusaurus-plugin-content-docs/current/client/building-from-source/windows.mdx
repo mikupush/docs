@@ -1,0 +1,105 @@
+---
+sidebar_position: 3
+title: Windows
+---
+
+# Compilando en Windows
+
+## Requisitos
+
+1.  **Visual Studio**: Instala [Visual Studio](https://visualstudio.microsoft.com/downloads/) con las siguientes cargas de trabajo:
+    *   **Desarrollo de escritorio con C++** (para la aplicación principal de Tauri)
+    *   **Desarrollo de escritorio .NET** (para el Ayudante de Windows)
+    *   **Desarrollo de aplicaciones WinUI** (para el Ayudante de Windows)
+
+2.  **WebView2 Runtime**: Asegúrate de tener instalado el [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (generalmente preinstalado en Windows 10/11).
+
+## Ayudante de Windows (Extensión de Compartir)
+
+:::tip
+Toda esta sección es opcional. Si no necesitas la funcionalidad nativa de "Compartir en" en Windows, puedes omitir esto y proceder directamente a la sección [Compilar la Aplicación Principal](#compilar-la-aplicación-principal).
+:::
+
+Miku Push! para Windows incluye una aplicación auxiliar que proporciona una experiencia nativa de "Compartir en", similar a una extensión de compartir en macOS.
+Este ayudante es una aplicación .NET separada que debe compilarse e instalarse de forma independiente.
+
+### 1. Crea un Certificado Autofirmado
+
+Para instalar el paquete MSIX del ayudante, este debe estar firmado. Puedes crear un certificado autofirmado para el desarrollo local usando PowerShell.
+
+Primero, crea el certificado:
+```powershell
+New-SelfSignedCertificate `
+    -Type CodeSigningCert `
+    -KeyUsage DigitalSignature `
+    -CertStoreLocation "Cert:\CurrentUser\My" `
+    -Subject "CN=Miku Push! Team, O=Miku Push! Team, C=ES" `
+    -FriendlyName "Miku Push! Team"
+```
+
+A continuación, obtén la huella digital del certificado y expórtalo a un archivo PFX. Reemplaza `<Tu Contraseña>` con una contraseña segura de tu elección.
+```powershell
+$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "*Miku Push! Team*" } | Select-Object -ExpandProperty Thumbprint
+$password = ConvertTo-SecureString -String <Tu Contraseña> -Force -AsPlainText
+Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath MikuPushCert.pfx -Password $password
+```
+
+Finalmente, confía en el certificado exportado. Debes **ejecutar este comando como Administrador**.
+```powershell
+Import-PfxCertificate -FilePath MikuPushCert.pfx -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $password
+```
+
+### 2. Compila el Paquete MSIX Firmado
+
+Desde la raíz del repositorio `mikupush`, ejecuta el siguiente comando `dotnet publish`. Recuerda reemplazar `<Tu Contraseña>` con la misma contraseña que usaste al crear el certificado.
+
+El comando debe ejecutarse desde el directorio `helpers/windows-helpers`.
+```powershell
+cd helpers/windows-helpers
+
+dotnet publish `
+    -f net8.0-windows10.0.19041.0 `
+    -c Release `
+    -r win-x64 `
+    --self-contained `
+    -p:Platform=x64 `
+    -p:GenerateAppxPackageOnBuild=true `
+    -p:AppxPackageSigningEnabled=true `
+    -p:PackageCertificateKeyFile="MikuPushCert.pfx" `
+    -p:PackageCertificatePassword="<Tu Contraseña>"
+```
+
+### 3. Instala el Paquete MSIX
+
+El instalador (`.msixbundle`) se generará en la carpeta `helpers/windows-helpers/AppPackages/windows-helpers_*`. Puedes instalarlo con el siguiente comando de PowerShell:
+```powershell
+Add-AppxPackage -Path .\AppPackages\windows-helpers_*\windows-helpers_*.msixbundle
+```
+
+## Compilar la Aplicación Principal
+
+Este proceso compila la aplicación principal de Tauri.
+
+### Compilación de Producción
+
+Para compilar los binarios e instaladores de producción optimizados (`.msi`, `.exe`) para Windows:
+
+```bash
+npm run tauri build
+```
+
+O ejecuta la compilación de depuración:
+
+```bash
+npm run tauri build -- --debug
+```
+
+Los ejecutables e instaladores resultantes se ubicarán en `src-tauri/target/release/bundle/`.
+
+### Modo de Desarrollo
+
+Para ejecutar la aplicación en modo de desarrollo con recarga en caliente:
+
+```bash
+npm run tauri dev
+```

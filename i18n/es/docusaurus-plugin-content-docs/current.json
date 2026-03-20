@@ -1,0 +1,26 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Server": {
+    "message": "Servidor",
+    "description": "The label for category 'Server' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Server.link.generated-index.description": {
+    "message": "*Miku Push!* Server es el backend que impulsa el servicio de intercambio de archivos *Miku Push!*. Proporciona una API REST para subir, gestionar y descargar archivos a través de enlaces compartibles únicos.",
+    "description": "The generated-index page description for category 'Server' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Client": {
+    "message": "Cliente",
+    "description": "The label for category 'Client' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Client.link.generated-index.description": {
+    "message": "*Miku Push!* Client es la aplicación de escritorio para gestionar y subir archivos.",
+    "description": "The generated-index page description for category 'Client' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Building from Source": {
+    "message": "Compilando desde la Fuente",
+    "description": "The label for category 'Building from Source' in sidebar 'tutorialSidebar'"
+  }
+}

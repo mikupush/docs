@@ -1,0 +1,254 @@
+---
+sidebar_position: 1
+---
+
+import LatestReleaseLinks from '@site/src/components/LatestReleaseLinks';
+import LatestReleaseTarLinks from '@site/src/components/LatestReleaseTarLinks';
+
+# Instalación
+
+En esta guía, aprenderás a instalar el servidor Miku Push! usando Docker Compose, un paquete Debian o un tarball genérico para cualquier distribución de Linux.
+
+:::tip Compílalo tú mismo
+Si prefieres compilar el servidor desde el código fuente en lugar de usar artefactos precompilados, consulta la guía [Compilando desde Fuente](./building-from-source.mdx).
+:::
+
+## Prerrequisitos
+
+Antes de empezar, asegúrate de tener una base de datos **PostgreSQL 17** disponible. Si usas el método de Docker Compose, se incluye un contenedor de base de datos en el ejemplo.
+
+## Instalar con Docker Compose (Recomendado)
+
+Usar Docker es la forma más fácil de poner en marcha Miku Push!. Recomendamos usar Docker Compose para gestionar el servidor y su base de datos.
+
+### 1. Crea un `docker-compose.yml`
+
+Crea un nuevo directorio para Miku Push! y crea un archivo `docker-compose.yml`:
+
+```yaml
+services:
+  server:
+    image: mikupush/server:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/srv/data
+      - ./config.yaml:/srv/config.yaml:ro # opcional, solo si quieres configurar el servidor a través del archivo de configuración
+    environment:
+      - MIKU_PUSH_DATABASE_HOST=postgres
+      - MIKU_PUSH_DATABASE_PORT=5432
+      - MIKU_PUSH_DATABASE_NAME=miku_push
+      - MIKU_PUSH_DATABASE_USER=miku_push
+      - MIKU_PUSH_DATABASE_PASSWORD=miku_push
+
+  postgres:
+    image: postgres:17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=miku_push
+      - POSTGRES_USER=miku_push
+      - POSTGRES_PASSWORD=miku_push
+
+volumes:
+  postgres_data:
+```
+
+### 2. Configuración
+
+Puedes descargar una plantilla para el archivo `config.yaml`:
+
+```bash
+curl -L https://raw.githubusercontent.com/mikupush/server/refs/heads/main/config.example.yaml -o config.yaml
+```
+
+Si necesitas personalizar la configuración del servidor, puedes editar este archivo o usar Variables de Entorno. 
+
+Consulta la página de [Configuración](./configuration.mdx) para una lista completa de las opciones disponibles y sus prioridades.
+
+**Ejemplo (Variables de Entorno de Docker):**
+También puedes añadir configuraciones directamente a tu `docker-compose.yml`:
+```yaml
+    environment:
+      - MIKU_PUSH_LOG_LEVEL=debug
+      - MIKU_PUSH_UPLOAD_MAX_SIZE=100000000
+```
+
+### 3. Inicia el servidor
+
+Ejecuta el siguiente comando para iniciar los contenedores en segundo plano:
+
+```bash
+docker compose up -d
+```
+
+El servidor estará disponible en `http://localhost:8080`. Puedes confirmar que está funcionando siguiendo los pasos de [Verificar](#6-verificar).
+
+---
+
+## Instalación Nativa (Debian/Ubuntu)
+
+Si prefieres una instalación nativa, proporcionamos paquetes `.deb` para las arquitecturas `amd64` y `arm64`.
+
+### 1. Descarga e Instala
+
+Siempre puedes descargar la última versión del paquete directamente desde GitHub:
+
+<LatestReleaseLinks />
+
+### 2. Configuración
+
+El archivo de configuración se encuentra en `/etc/io.mikupush.server/config.yaml`. Edítalo para configurar tu conexión a la base de datos u otros ajustes:
+
+```bash
+sudo nano /etc/io.mikupush.server/config.yaml
+```
+
+Si necesitas saber más sobre las opciones disponibles (registro, límites de subida, etc.), por favor consulta la página de [Configuración](./configuration.mdx).
+
+### 3. Gestión del Servicio
+
+El paquete instala y habilita automáticamente un servicio de systemd. Puedes gestionarlo con los siguientes comandos:
+
+```bash
+# Iniciar el servicio
+sudo systemctl start mikupush-server
+
+# Comprobar el estado
+sudo systemctl status mikupush-server
+
+# Reiniciar después de cambios en la configuración
+sudo systemctl restart mikupush-server
+```
+
+Para confirmar que el servidor está respondiendo, consulta los pasos de [Verificar](#6-verificar).
+
+---
+
+## Instalación Genérica de Linux (tar.gz)
+
+Para cualquier distribución de Linux con **systemd**, puedes instalar Miku Push! desde el tarball comprimido disponible en la [página de lanzamientos de GitHub](https://github.com/mikupush/server/releases).
+
+El archivo contiene los siguientes ficheros:
+
+| Fichero | Descripción |
+| :--- | :--- |
+| `mikupush-server` | Binario del servidor. |
+| `config.yaml` | Archivo de configuración por defecto. |
+| `dist/` | Archivos estáticos y plantillas de la interfaz de usuario web precompilados. |
+| `mikupush-server.service` | Archivo de unidad de systemd. |
+
+### 1. Descarga y Extrae
+
+Crea el directorio de instalación y extrae el archivo:
+
+```bash
+sudo mkdir -p /opt/mikupush-server
+```
+
+<LatestReleaseTarLinks />
+
+### 2. Crea un Usuario Dedicado
+
+Crea un usuario del sistema para ejecutar el servicio:
+
+```bash
+sudo useradd -r -s /usr/sbin/nologin mikupush
+```
+
+### 3. Crea los Directorios de Datos y Logs
+
+```bash
+sudo mkdir -p /var/lib/io.mikupush.server/data
+sudo mkdir -p /var/log/io.mikupush.server
+
+sudo chown -R mikupush:mikupush /var/lib/io.mikupush.server
+sudo chown -R mikupush:mikupush /var/log/io.mikupush.server
+sudo chown -R mikupush:mikupush /opt/mikupush-server
+```
+
+### 4. Configuración
+
+Edita el `config.yaml` incluido para apuntar a las rutas correctas y configurar tu conexión a la base de datos:
+
+```bash
+sudo nano /opt/mikupush-server/config.yaml
+```
+
+Dado que el binario, las plantillas y los archivos estáticos se encuentran en `/opt/mikupush-server`, actualiza las rutas correspondientemente:
+
+```yaml
+server:
+  static_directory: /opt/mikupush-server/dist/assets
+  templates_directory: /opt/mikupush-server/dist
+
+log:
+  directory: /var/log/io.mikupush.server
+
+upload:
+  directory: /var/lib/io.mikupush.server/data
+```
+
+Para todas las opciones disponibles, consulta la página de [Configuración](./configuration.mdx).
+
+### 5. Instala el Servicio de systemd
+
+Copia el archivo de unidad incluido y actualiza `ExecStart` para que apunte al binario y al archivo de configuración:
+
+```bash
+sudo cp /opt/mikupush-server/mikupush-server.service /etc/systemd/system/mikupush-server.service
+```
+
+Edita el archivo de unidad para que coincida con la ruta de instalación:
+
+```bash
+sudo nano /etc/systemd/system/mikupush-server.service
+```
+
+```ini
+[Unit]
+Description=The Miku Push! server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/opt/mikupush-server/mikupush-server --config /opt/mikupush-server/config.yaml
+Restart=on-failure
+User=mikupush
+Group=mikupush
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Luego habilita e inicia el servicio:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable mikupush-server
+sudo systemctl start mikupush-server
+```
+
+### 6. Verificar
+
+Comprueba que el servicio se está ejecutando:
+
+```bash
+sudo systemctl status mikupush-server
+```
+
+Luego confirma que el servidor está respondiendo:
+
+```bash
+curl -i -H 'Accept: application/json' http://localhost:8080/health
+```
+
+Deberías ver una respuesta como:
+
+```
+HTTP/1.1 200 OK
+content-type: application/json
+content-length: 15
+
+{"status":"up"}
+```
