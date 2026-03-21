@@ -6,6 +6,7 @@ COPY . .
 
 RUN npm install && npm run build
 RUN bash /build/scripts/rename-assets-dir.sh
+RUN bash /build/scripts/docs-redirect.sh
 
 FROM nginx:1.29.2
 
