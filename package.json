@@ -1,6 +1,8 @@
 {
   "name": "mikupush-docs",
   "version": "0.0.0",
+  "license": "MIT",
+  "author": "MagonxESP",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
