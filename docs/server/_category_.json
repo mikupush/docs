@@ -3,6 +3,6 @@
   "position": 2,
   "link": {
     "type": "generated-index",
-    "description": "*Miku Push!* Server is the backend that powers the *Miku Push!* file sharing service. It provides a REST API for uploading, managing, and downloading files through unique shareable links."
+    "description": "Miku Push! Server is the backend that powers the Miku Push! file sharing service. It provides a REST API for uploading, managing, and downloading files through unique shareable links."
   }
 }
