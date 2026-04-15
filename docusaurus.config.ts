@@ -77,6 +77,7 @@ const config: Config = {
       logo: {
         alt: '',
         src: 'img/logo.svg',
+        href: 'https://mikupush.io'
       },
       items: [
         {
