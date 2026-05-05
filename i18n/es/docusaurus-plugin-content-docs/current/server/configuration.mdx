@@ -67,6 +67,8 @@ Ajustes generales para el servidor de la API HTTP.
 
 ```yaml
 server:
+  name: mikupush.io
+  # icon: examples/server_icon.svg
   host: 0.0.0.0
   port: 8080
   static_directory: dist/assets
@@ -76,6 +78,8 @@ server:
 
 | Clave | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
+| `server.name` | `mikupush.io` | No | Nombre público del servidor usado en endpoints de metadatos (por ejemplo `/api/info`). |
+| `server.icon` | Sin definir | No | Ruta opcional al archivo del icono del servidor usado por `/api/icon`. Formatos soportados: `.jpeg`, `.png`, `.gif`, `.webp`, `.svg`. |
 | `server.host` | `0.0.0.0` | No | Dirección IP o nombre de host donde el servidor escuchará las conexiones. |
 | `server.port` | `8080` | No | Puerto TCP del servidor. |
 | `server.static_directory` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
@@ -86,6 +90,8 @@ server:
   <TabItem value="env" label="Variables de Entorno">
 
 ```bash
+MIKU_PUSH_SERVER_NAME=mikupush.io
+# MIKU_PUSH_SERVER_ICON=examples/server_icon.svg
 MIKU_PUSH_SERVER_HOST=0.0.0.0
 MIKU_PUSH_SERVER_PORT=8080
 MIKU_PUSH_SERVER_STATIC_DIR=dist/assets
@@ -95,6 +101,8 @@ MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
 
 | Variable | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
+| `MIKU_PUSH_SERVER_NAME` | `mikupush.io` | No | Nombre público del servidor usado en endpoints de metadatos (por ejemplo `/api/info`). |
+| `MIKU_PUSH_SERVER_ICON` | Sin definir | No | Ruta opcional al archivo del icono del servidor usado por `/api/icon`. Formatos soportados: `.jpeg`, `.png`, `.gif`, `.webp`, `.svg`. |
 | `MIKU_PUSH_SERVER_HOST` | `0.0.0.0` | No | Dirección IP o nombre de host donde el servidor escuchará las conexiones. |
 | `MIKU_PUSH_SERVER_PORT` | `8080` | No | Puerto TCP del servidor. |
 | `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |

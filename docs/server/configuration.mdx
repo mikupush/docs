@@ -67,6 +67,8 @@ General settings for the HTTP API server.
 
 ```yaml
 server:
+  name: mikupush.io
+  # icon: examples/server_icon.svg
   host: 0.0.0.0
   port: 8080
   static_directory: dist/assets
@@ -76,6 +78,8 @@ server:
 
 | Key | Default | Required | Description |
 | :--- | :--- | :---: | :--- |
+| `server.name` | `mikupush.io` | No | Public server name used in metadata endpoints (for example `/api/info`). |
+| `server.icon` | Not set | No | Optional path to server icon file used by `/api/icon`. Supported formats: `.jpeg`, `.png`, `.gif`, `.webp`, `.svg`. |
 | `server.host` | `0.0.0.0` | No | IP address or hostname where the server will listen for connections. |
 | `server.port` | `8080` | No | Server TCP port. |
 | `server.static_directory` | `dist/assets` | No | Directory with static assets. Can be a relative path (resolved from the executable's working directory) or absolute. |
@@ -86,6 +90,8 @@ server:
   <TabItem value="env" label="Environment Variables">
 
 ```bash
+MIKU_PUSH_SERVER_NAME=mikupush.io
+# MIKU_PUSH_SERVER_ICON=examples/server_icon.svg
 MIKU_PUSH_SERVER_HOST=0.0.0.0
 MIKU_PUSH_SERVER_PORT=8080
 MIKU_PUSH_SERVER_STATIC_DIR=dist/assets
@@ -95,6 +101,8 @@ MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
 
 | Variable | Default | Required | Description |
 | :--- | :--- | :---: | :--- |
+| `MIKU_PUSH_SERVER_NAME` | `mikupush.io` | No | Public server name used in metadata endpoints (for example `/api/info`). |
+| `MIKU_PUSH_SERVER_ICON` | Not set | No | Optional path to server icon file used by `/api/icon`. Supported formats: `.jpeg`, `.png`, `.gif`, `.webp`, `.svg`. |
 | `MIKU_PUSH_SERVER_HOST` | `0.0.0.0` | No | IP address or hostname where the server will listen for connections. |
 | `MIKU_PUSH_SERVER_PORT` | `8080` | No | Server TCP port. |
 | `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directory with static assets. Can be a relative path (resolved from the executable's working directory) or absolute. |
