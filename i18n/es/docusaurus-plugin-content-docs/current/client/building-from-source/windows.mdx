@@ -25,6 +25,8 @@ Este ayudante es una aplicación .NET separada que debe compilarse e instalarse 
 
 ### 1. Crea un certificado autofirmado
 
+Ejecuta los comandos de esta sección desde la raíz del repositorio `mikupush`. El certificado se guardará en el directorio del proyecto auxiliar.
+
 Para instalar el paquete MSIX del ayudante, este debe estar firmado. Puedes crear un certificado autofirmado desde la PowerShell.
 
 ```powershell
@@ -32,21 +34,21 @@ New-SelfSignedCertificate `
     -Type CodeSigningCert `
     -KeyUsage DigitalSignature `
     -CertStoreLocation "Cert:\CurrentUser\My" `
-    -Subject "CN=*Miku Push!* Team, O=*Miku Push!* Team, C=ES" `
-    -FriendlyName "*Miku Push!* Team"
+    -Subject "CN=Miku Push! Team, O=Miku Push! Team, C=ES" `
+    -FriendlyName "Miku Push! Team"
 ```
 
 A continuación, obtén la huella digital del certificado y expórtalo a un archivo PFX. Reemplaza `<Tu Contraseña>` con una contraseña segura a tu elección.
 
 ```powershell
-$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "**Miku Push!* Team*" } | Select-Object -ExpandProperty Thumbprint
-$password = ConvertTo-SecureString -String <Tu Contraseña> -Force -AsPlainText
-Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath MikuPushCert.pfx -Password $password
+$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -eq "CN=Miku Push! Team, O=Miku Push! Team, C=ES" } | Select-Object -ExpandProperty Thumbprint
+$password = ConvertTo-SecureString -String "<Tu Contraseña>" -Force -AsPlainText
+Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath "$PWD/helpers/windows-helpers/MikuPushCert.pfx" -Password $password
 ```
 
 Finalmente, confía en el certificado exportado. Debes **ejecutar este comando como Administrador**.
 ```powershell
-Import-PfxCertificate -FilePath MikuPushCert.pfx -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $password
+Import-PfxCertificate -FilePath "$PWD/helpers/windows-helpers/MikuPushCert.pfx" -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $password
 ```
 
 ### 2. Compila el paquete MSIX firmado
@@ -82,7 +84,7 @@ Este proceso compila la aplicación principal.
 
 ### Compilación de producción
 
-Para compilar los binarios e instaladores de producción optimizados (`.msi`, `.exe`) para Windows:
+Para compilar los binarios e instaladores de producción optimizados (`.msi`) para Windows:
 
 ```bash
 npm run tauri build
@@ -94,7 +96,7 @@ O ejecuta la compilación de depuración:
 npm run tauri build -- --debug
 ```
 
-Los ejecutables e instaladores resultantes se ubicarán en `src-tauri/target/release/bundle/`.
+Los ejecutables e instaladores resultantes se ubicarán en `src-tauri/target/release/bundle/` para producción y en `src-tauri/target/debug/bundle/` para depuración.
 
 ### Modo desarrollo
 

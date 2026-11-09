@@ -16,7 +16,7 @@ You need the following tools installed:
 | [Node.js](https://nodejs.org/) | 22+ | Builds the web UI (Astro). |
 | npm | (bundled with Node.js) | Installs JavaScript dependencies. |
 | git | | Clones the repository. |
-| dpkg | (pre-installed on Debian/Ubuntu) | Only required to build the `.deb` package. |
+| dpkg | (pre-installed on Debian/Ubuntu) | Both packaging scripts use it to detect the architecture. |
 
 ## Clone the Repository
 
@@ -82,7 +82,7 @@ make linux-release
 
 These targets run, in order:
 1. `npm run build` — builds the web UI into `dist/`.
-2. `cargo build` — compiles the server binary.
+2. `cargo build` for debug or `cargo build --release` for release — compiles the server binary with the selected profile.
 3. `scripts/deb-package.sh` — creates the `.deb` package.
 4. `scripts/tar-package.sh` — creates the `.tar.gz` archive.
 
@@ -122,7 +122,7 @@ For installation instructions using these artifacts, see the [Installation](./in
 
 ## Docker Image
 
-You can also build the Docker image locally. The `Dockerfile` uses a multi-stage build: one stage compiles the Rust binary, another builds the web UI with Node.js, and the final stage produces a minimal image based on `debian:bookworm-slim`.
+You can also build the Docker image locally. The `Dockerfile` uses a multi-stage build: one stage compiles the Rust binary, another builds the web UI with Node.js, and the final stage produces a minimal image based on `debian:trixie-slim`.
 
 From the repository root:
 
@@ -130,14 +130,4 @@ From the repository root:
 docker build -t mikupush/server:local .
 ```
 
-Then run it:
-
-```bash
-docker run -d \
-  --name mikupush-server \
-  -p 8080:8080 \
-  -v "./data:/srv/data" \
-  mikupush/server:local
-```
-
-For a full Docker Compose setup with PostgreSQL, see the [Installation](./installation.mdx#install-with-docker-compose-recommended) page.
+To run this image with PostgreSQL and persistent storage, follow the [Docker Compose example](./installation.mdx#install-with-docker-compose-recommended) and replace `mikupush/server:latest` with `mikupush/server:local`.

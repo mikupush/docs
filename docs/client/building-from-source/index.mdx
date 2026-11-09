@@ -37,13 +37,13 @@ npm install
 ## Diesel Setup
 
 The client uses [Diesel](https://diesel.rs/) as the ORM with SQLite.
-Ensure you have the `diesel_cli` installed to run database migrations if needed during development:
+The application embeds migrations and applies them automatically at startup. Install `diesel_cli` only if you need to create or manage migrations during development:
 
 ```bash
 cargo install diesel_cli --no-default-features --features sqlite
 ```
 
-*Note: For the SQLite feature on Linux, you must have `libsqlite3-dev` installed. On Windows and macOS, SQLite is usually bundled or easier to set up.*
+The application bundles SQLite through its Rust dependencies. The separate Diesel CLI may need system SQLite development libraries; on Debian/Ubuntu, install `libsqlite3-dev` if you use the command above.
 
 ## Next Steps
 

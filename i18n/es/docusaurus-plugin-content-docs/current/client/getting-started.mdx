@@ -1,0 +1,47 @@
+---
+sidebar_position: 1
+---
+
+# Primeros pasos
+
+*Miku Push!* sube archivos y carpetas a un servidor y te proporciona un enlace para compartirlos. Quien recibe el enlace descarga el archivo desde su navegador, sin instalar la aplicación de escritorio.
+
+## Instala la aplicación de escritorio
+
+Descarga el paquete para tu sistema operativo y procesador desde los [lanzamientos del cliente](https://github.com/mikupush/mikupush/releases). Usa el instalador `.msi` en Windows, abre el `.dmg` y copia la aplicación a Aplicaciones en macOS, o instala el paquete `.deb` o `.rpm` con el gestor de paquetes de Linux. La aplicación actual para macOS requiere macOS 15.6 o posterior.
+
+No necesitas Rust, Node.js ni herramientas de bases de datos para usar un paquete instalado. Si prefieres compilar la aplicación, sigue la guía de [compilación desde el código fuente](./building-from-source/index.mdx).
+
+## Conecta con un servidor
+
+Abre **Gestionar servidores**, elige **Añadir servidor** e introduce la dirección del servidor. Puedes asignarle un alias para reconocerlo después. Usa la opción para probar la conexión y, a continuación, guarda y conecta para seleccionarlo como destino de las subidas.
+
+Si el servidor se ejecuta en tu equipo, la dirección puede ser `http://localhost:8080`. Para compartir con otras personas, usa una dirección HTTPS accesible del servidor. Un enlace a localhost apunta al equipo de quien lo abre y no llegará a tu servidor. Para alojar tu propio servidor, sigue la [guía de instalación del servidor](../server/installation.mdx).
+
+## Sube y comparte archivos
+
+Selecciona un archivo o una carpeta desde la página de subidas, o arrástralo a la aplicación. Las carpetas se comprimen en archivos ZIP temporales antes de subirlas; tu carpeta original se conserva.
+
+La página de subidas muestra la cola y el progreso de compresión y transferencia. Puedes cancelar una transferencia con el botón de la cruz o reintentar una subida fallida con el botón de reintento. Cuando termine, usa el botón del enlace para copiar la dirección que compartirás. Las subidas completadas también aparecen en las subidas archivadas del servidor seleccionado.
+
+Al eliminar una subida completada con el botón de la papelera, el archivo se borra del servidor tras la confirmación. Su enlace dejará de ofrecer el archivo. La configuración de expiración del servidor también puede hacer que un archivo compartido deje de estar disponible.
+
+## Cifrado y preferencias de subida
+
+El cifrado de extremo a extremo está activado por defecto. La aplicación cifra el archivo antes de enviarlo y el navegador del destinatario lo descifra. Las vistas previas de imágenes y vídeos se desactivan para las subidas cifradas.
+
+Usa las preferencias de subida de la página de subidas para cambiar los valores predeterminados de las siguientes transferencias. Para elegir las preferencias de cada lote, activa la opción de preguntar siempre por las preferencias de subida en **Ajustes**. El diálogo se aplicará a los archivos o carpetas que vas a subir. Cambiar los valores predeterminados no modifica las preferencias que ya tiene una subida, incluso cuando la reintentas.
+
+Para las subidas cifradas, comparte el enlace completo, incluido todo lo que aparece después de `#`. Ese fragmento contiene la clave de descifrado y el navegador lo lee localmente. Cualquier persona con el enlace completo puede descifrar el archivo; sin la clave no se puede descifrar la descarga cifrada.
+
+## Ajustes de transferencia
+
+En **Ajustes**, la subida por partes está activada por defecto. El tamaño inicial de cada parte es de 50 MiB, aunque la interfaz muestra la unidad como MB. Puedes elegir valores entre 5 y 1000; las partes pequeñas pueden ayudar en conexiones lentas. Estas partes de transferencia son independientes del formato de cifrado y no cambian la clave.
+
+Los ajustes también permiten elegir inglés o español, cambiar el tema y activar el inicio de la aplicación minimizada al arrancar el sistema.
+
+## Solución de problemas de descarga
+
+El navegador del destinatario necesita un contexto seguro, normalmente mediante HTTPS, y compatibilidad con Web Workers y Origin Private File System. Las descargas cifradas también usan Web Crypto. El navegador almacena temporalmente la descarga, por lo que necesita suficiente espacio libre. Consulta los [requisitos de descarga del servidor](../server/installation.mdx#requisitos-para-las-descargas) para preparar el despliegue.
+
+Si una subida falla, comprueba el servidor seleccionado, su conexión y el tamaño máximo permitido por el servidor. Si no se puede abrir una descarga cifrada, comprueba que el enlace conserva el fragmento completo después de `#`.

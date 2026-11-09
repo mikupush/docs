@@ -13,6 +13,12 @@ In this guide, you will learn how to install the *Miku Push!* server using Docke
 If you prefer to compile the server from source instead of using pre-built artifacts, check the [Building from Source](./building-from-source.mdx) guide.
 :::
 
+## Download requirements
+
+To share links beyond your own computer, serve the application over HTTPS with a trusted certificate; a reverse proxy can provide HTTPS in front of the server HTTP port. `http://localhost:8080` is suitable for local checks, but remote access over plain HTTP does not provide the secure context required by the downloader.
+
+The recipient browser must support Web Workers and Origin Private File System, private storage used temporarily during downloads. Decryption also requires Web Crypto. If a download fails because of browser support or storage space, try an updated browser and check the available storage.
+
 ## Prerequisites
 
 Before starting, ensure you have a **PostgreSQL 17** database available. If you use the Docker Compose method, a database container is included in the example.
@@ -160,6 +166,7 @@ sudo useradd -r -s /usr/sbin/nologin mikupush
 
 ```bash
 sudo mkdir -p /var/lib/io.mikupush.server/data
+sudo mkdir -p /var/lib/io.mikupush.server/state
 sudo mkdir -p /var/log/io.mikupush.server
 
 sudo chown -R mikupush:mikupush /var/lib/io.mikupush.server
@@ -181,6 +188,7 @@ Since the binary, templates and static files live under `/opt/mikupush-server`, 
 server:
   static_directory: /opt/mikupush-server/dist/assets
   templates_directory: /opt/mikupush-server/dist
+  state_directory: /var/lib/io.mikupush.server/state
 
 log:
   directory: /var/log/io.mikupush.server
