@@ -16,7 +16,7 @@ Necesitas tener instaladas las siguientes herramientas:
 | [Node.js](https://nodejs.org/) | 22+ | Construye la interfaz de usuario web (Astro). |
 | npm | (incluido con Node.js) | Instala las dependencias de JavaScript. |
 | git | | Clona el repositorio. |
-| dpkg | (preinstalado en Debian/Ubuntu) | Solo se requiere para construir el paquete `.deb`. |
+| dpkg | (preinstalado en Debian/Ubuntu) | Ambos scripts de empaquetado lo usan para detectar la arquitectura. |
 
 ## Clonar el repositorio
 
@@ -82,7 +82,7 @@ make linux-release
 
 Estos *targets* se ejecutan, en orden:
 1. `npm run build` — construye la interfaz de usuario web en `dist/`.
-2. `cargo build` — compila el binario del servidor.
+2. `cargo build` para debug o `cargo build --release` para release — compila el binario del servidor con el perfil correspondiente.
 3. `scripts/deb-package.sh` — crea el paquete `.deb`.
 4. `scripts/tar-package.sh` — crea el archivo `.tar.gz`.
 
@@ -122,7 +122,7 @@ Para instrucciones de instalación usando estos artefactos, consulta la página 
 
 ## Imagen de Docker
 
-También puedes construir la imagen de Docker localmente. El `Dockerfile` usa una construcción de múltiples etapas: una etapa compila el binario, otra construye la interfaz de usuario web con Node.js, y la etapa final produce una imagen mínima basada en `debian:bookworm-slim`.
+También puedes construir la imagen de Docker localmente. El `Dockerfile` usa una construcción de múltiples etapas: una etapa compila el binario, otra construye la interfaz de usuario web con Node.js, y la etapa final produce una imagen mínima basada en `debian:trixie-slim`.
 
 Desde la raíz del repositorio:
 
@@ -130,14 +130,4 @@ Desde la raíz del repositorio:
 docker build -t mikupush/server:local .
 ```
 
-Luego ejecútala:
-
-```bash
-docker run -d 
-  --name mikupush-server 
-  -p 8080:8080 
-  -v "./data:/srv/data" 
-  mikupush/server:local
-```
-
-Para una configuración completa de Docker Compose con PostgreSQL, consulta la página de [Instalación](./installation.mdx#install-with-docker-compose-recommended).
+Para ejecutar esta imagen con PostgreSQL y almacenamiento persistente, sigue el ejemplo de [Docker Compose](./installation.mdx#instalar-con-docker-compose-recomendado) y sustituye `mikupush/server:latest` por `mikupush/server:local`.

@@ -7,6 +7,8 @@ title: macOS
 
 ## Requirements
 
+The current configuration requires macOS 15.6 or newer to run the application.
+
 It is recommended to install Xcode from the Mac App Store. While older versions might work, Xcode 26 or later is recommended to ensure compatibility with the latest SDKs.
 
 After installing Xcode, ensure the command line tools are also set up by running:
@@ -69,7 +71,7 @@ Run the following command to build the native macOS helpers and the main Tauri a
 make build-macos
 ```
 
-The resulting app bundles and disk images (`.dmg`) will be located in `src-tauri/target/release/bundle/macos/`.
+The resulting app bundles and disk images (`.dmg`) will be located in `src-tauri/target/release/bundle/macos/` (`.app`) and `src-tauri/target/release/bundle/dmg/` (`.dmg`).
 
 ### Building without the Share Extension
 

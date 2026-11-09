@@ -7,6 +7,8 @@ title: macOS
 
 ## Requisitos
 
+La configuración actual establece macOS 15.6 como versión mínima para ejecutar la aplicación.
+
 Se recomienda instalar Xcode desde la Mac App Store. Aunque las versiones más antiguas podrían funcionar, se recomienda Xcode 26 o posterior para garantizar la compatibilidad con los SDK más recientes.
 
 Después de instalar Xcode, asegúrate de que las herramientas de línea de comandos también estén configuradas ejecutando:
@@ -65,7 +67,7 @@ Ejecuta el siguiente comando para compilar el proyecto de Xcode para macOS y la 
 make build-macos
 ```
 
-Los paquetes de la aplicación y las imágenes de disco (`.dmg`) resultantes se ubicarán en `src-tauri/target/release/bundle/macos/`.
+Los paquetes de la aplicación y las imágenes de disco (`.dmg`) resultantes se ubicarán en `src-tauri/target/release/bundle/macos/` (aplicación `.app`) y `src-tauri/target/release/bundle/dmg/` (imagen `.dmg`).
 
 ### Compilando sin la extensión de compartir
 

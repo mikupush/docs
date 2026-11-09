@@ -1,0 +1,47 @@
+---
+sidebar_position: 1
+---
+
+# Getting started
+
+*Miku Push!* uploads files and folders to a server and gives you a link to share. Recipients download through their browser without installing the desktop application.
+
+## Install the desktop application
+
+Download the package for your operating system and processor from the [desktop releases](https://github.com/mikupush/mikupush/releases). Use the `.msi` installer on Windows, open the `.dmg` and copy the application to Applications on macOS, or install the `.deb` or `.rpm` package with your Linux package manager. The current macOS application requires macOS 15.6 or newer.
+
+You do not need Rust, Node.js, or database tools to use an installed package. If you want to compile the application yourself, follow [Building from Source](./building-from-source/index.mdx).
+
+## Connect to a server
+
+Open **Manage servers**, choose **Add server**, and enter the server URL. You can give the server a custom alias to recognize it later. Use **Test connection** to check the address, then **Save and connect** to select it for uploads.
+
+For a server running on your own computer, the URL may be `http://localhost:8080`. For sharing with other people, use the server's reachable HTTPS address. A localhost link points to the recipient's own computer and will not reach your server. To host your own server, follow the [server installation guide](../server/installation.mdx).
+
+## Upload and share
+
+Select a file or folder from the upload page, or drag it into the application. Folders are compressed into temporary ZIP files before uploading; your original folder is kept.
+
+The upload page shows queue, compression, and transfer progress. You can cancel a transfer with the cross button or retry a failed upload with the retry button. When the upload finishes, use the link button to copy its sharing link. Completed uploads are also available under **Archived uploads** for the selected server.
+
+Deleting a completed upload through its trash button removes the file from the server after confirmation. Its sharing link will no longer provide the file. Server expiration settings can also make a previously shared file unavailable.
+
+## Encryption and upload preferences
+
+End-to-end encryption is enabled by default. The application encrypts the file before sending it, and the recipient's browser decrypts it. Image and video previews are disabled for encrypted uploads.
+
+Use **Upload preferences** on the upload page to change the defaults for future uploads. To choose preferences for each batch, enable **Ask for upload preferences every time** in **Settings**. The preferences dialog then applies to the files or folders you are about to upload. Changing the defaults does not change preferences already captured by an upload, including when you retry it.
+
+For encrypted uploads, share the complete copied link, including everything after `#`. That fragment contains the decryption key and is read locally by the browser. Anyone with the complete link can decrypt the file; without the key, the encrypted download cannot be decrypted.
+
+## Transfer settings
+
+In **Settings**, uploading in chunks is enabled by default. The initial chunk size is 50 MiB, although the interface labels the unit as MB. You can choose values from 5 to 1000; smaller chunks may help on slow connections. These transfer chunks are separate from the encryption format and do not change the encryption key.
+
+Settings also let you choose English or Spanish, change the theme, and enable starting the application minimized when the system starts.
+
+## Download troubleshooting
+
+Recipients need a secure browser context, normally provided by HTTPS, and support for Web Workers and Origin Private File System. Encrypted downloads also use Web Crypto. The browser temporarily stores the download, so it needs sufficient free storage. See the [server download requirements](../server/installation.mdx#download-requirements) for deployment details.
+
+If an upload fails, check the selected server, its connection, and the server's maximum file size. If an encrypted download cannot be opened, check that the link still contains its full fragment after `#`.

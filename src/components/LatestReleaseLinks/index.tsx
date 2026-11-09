@@ -12,9 +12,9 @@ export default function LatestReleaseLinks() {
   const arm64Asset = release?.assets.find(a => a.name.includes('arm64.deb'));
 
   const amd64Url = amd64Asset?.browser_download_url
-    || `https://github.com/mikupush/server/releases/download/${version}/mikupush-server-${version}-amd64.deb`;
+    || `https://github.com/mikupush/server/releases/download/${version}/mikupush-server_${version}_amd64.deb`;
   const arm64Url = arm64Asset?.browser_download_url
-    || `https://github.com/mikupush/server/releases/download/${version}/mikupush-server-${version}-arm64.deb`;
+    || `https://github.com/mikupush/server/releases/download/${version}/mikupush-server_${version}_arm64.deb`;
 
   return (
     <>

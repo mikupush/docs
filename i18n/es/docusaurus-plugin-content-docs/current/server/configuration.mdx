@@ -58,6 +58,8 @@ Si no se proporciona ninguna la opción `-c`, el servidor busca un archivo `conf
 
 Si no se encuentra ningún archivo en ninguna de estas ubicaciones, el servidor se inicia usando solo variables de entorno y valores predeterminados incorporados.
 
+El directorio de estado no sustituye a PostgreSQL ni al directorio de subidas. Conserva ambos directorios y la base de datos al recrear un contenedor o migrar la instalación. Si usas systemd, configura rutas absolutas para evitar depender del directorio de trabajo del servicio.
+
 ## Ajustes del servidor
 
 Ajustes generales para el servidor de la API HTTP.
@@ -74,6 +76,7 @@ server:
   static_directory: dist/assets
   static_base_path: /assets
   templates_directory: dist
+  state_directory: data/state
 ```
 
 | Clave | Predeterminado | Requerido | Descripción |
@@ -82,9 +85,10 @@ server:
 | `server.icon` | Sin definir | No | Ruta opcional al archivo del icono del servidor usado por `/api/icon`. Formatos soportados: `.jpeg`, `.png`, `.gif`, `.webp`, `.svg`. |
 | `server.host` | `0.0.0.0` | No | Dirección IP o nombre de host donde el servidor escuchará las conexiones. |
 | `server.port` | `8080` | No | Puerto TCP del servidor. |
-| `server.static_directory` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
+| `server.static_directory` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del proceso) o absoluta. |
 | `server.static_base_path` | `/assets` | No | Ruta base de la URL para servir archivos estáticos. |
-| `server.templates_directory` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
+| `server.templates_directory` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del proceso) o absoluta. |
+| `server.state_directory` | `data/state` | No | Directorio para el estado local persistente, incluida la cola de limpieza de partes. Debe ser escribible por el usuario del servicio. Las rutas relativas se resuelven desde el directorio de trabajo. |
 
   </TabItem>
   <TabItem value="env" label="Variables de Entorno">
@@ -97,6 +101,7 @@ MIKU_PUSH_SERVER_PORT=8080
 MIKU_PUSH_SERVER_STATIC_DIR=dist/assets
 MIKU_PUSH_SERVER_STATIC_BASE_PATH=/assets
 MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
+MIKU_PUSH_SERVER_STATE_DIRECTORY=data/state
 ```
 
 | Variable | Predeterminado | Requerido | Descripción |
@@ -105,9 +110,10 @@ MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
 | `MIKU_PUSH_SERVER_ICON` | Sin definir | No | Ruta opcional al archivo del icono del servidor usado por `/api/icon`. Formatos soportados: `.jpeg`, `.png`, `.gif`, `.webp`, `.svg`. |
 | `MIKU_PUSH_SERVER_HOST` | `0.0.0.0` | No | Dirección IP o nombre de host donde el servidor escuchará las conexiones. |
 | `MIKU_PUSH_SERVER_PORT` | `8080` | No | Puerto TCP del servidor. |
-| `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
+| `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directorio con activos estáticos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del proceso) o absoluta. |
 | `MIKU_PUSH_SERVER_STATIC_BASE_PATH` | `/assets` | No | Ruta base de la URL para servir archivos estáticos. |
-| `MIKU_PUSH_SERVER_TEMPLATES_DIR` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
+| `MIKU_PUSH_SERVER_TEMPLATES_DIR` | `dist` | No | Directorio con plantillas HTML utilizadas por la interfaz de usuario web. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del proceso) o absoluta. |
+| `MIKU_PUSH_SERVER_STATE_DIRECTORY` | `data/state` | No | Directorio para el estado local persistente, incluida la cola de limpieza de partes. Debe ser escribible por el usuario del servicio. Las rutas relativas se resuelven desde el directorio de trabajo. |
 
   </TabItem>
 </Tabs>
@@ -170,7 +176,7 @@ upload:
   # Tamaño máximo en bytes (p.ej. 5GB)
   max_size: 5000000000
   # Directorio de almacenamiento
-  directory: data
+  directory: data/uploads
   # Expiración en segundos (p.ej. 7 días)
   expires_in_seconds: 604800
   # Intervalo de limpieza en segundos (p.ej. 1 hora)
@@ -180,7 +186,7 @@ upload:
 | Clave | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
 | `upload.max_size` | Sin límite | No | Tamaño máximo de subida permitido en bytes. Si no se establece, no hay límite. |
-| `upload.directory` | `data` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
+| `upload.directory` | `data/uploads` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del proceso) o absoluta. |
 | `upload.expires_in_seconds` | Sin expiración | No | Tiempo de expiración para los archivos subidos en segundos. Si no se establece, los archivos no expiran. |
 | `upload.expiration_cleanup_interval_seconds` | `3600` | No | Intervalo en segundos para comprobar y eliminar archivos expirados. |
 
@@ -189,7 +195,7 @@ upload:
 
 ```bash
 MIKU_PUSH_UPLOAD_MAX_SIZE=5000000000 # 5GB
-MIKU_PUSH_UPLOAD_DIRECTORY=data
+MIKU_PUSH_UPLOAD_DIRECTORY=data/uploads
 MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS=604800
 MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL=3600
 ```
@@ -197,7 +203,7 @@ MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL=3600
 | Variable | Predeterminado | Requerido | Descripción |
 | :--- | :--- | :---: | :--- |
 | `MIKU_PUSH_UPLOAD_MAX_SIZE` | Sin límite | No | Tamaño máximo de subida permitido en bytes. Si no se establece, no hay límite. |
-| `MIKU_PUSH_UPLOAD_DIRECTORY` | `data` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio donde se encuentra el ejecutable) o absoluta. |
+| `MIKU_PUSH_UPLOAD_DIRECTORY` | `data/uploads` | No | Directorio donde se almacenan los archivos subidos. Puede ser una ruta relativa (resuelta desde el directorio de trabajo del proceso) o absoluta. |
 | `MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS` | Sin expiración | No | Tiempo de expiración para los archivos subidos en segundos. Si no se establece, los archivos no expiran. |
 | `MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL` | `3600` | No | Intervalo en segundos para comprobar y eliminar archivos expirados. |
 

@@ -58,6 +58,8 @@ If no flag is provided, the server searches for a `config.yaml` file in the foll
 
 If no file is found in any of these locations, the server starts using only environment variables and built-in defaults.
 
+The state directory does not replace PostgreSQL or the upload directory. Preserve both directories and the database when recreating a container or moving an installation. With systemd, configure absolute paths so storage does not depend on the service working directory.
+
 ## Server Settings
 
 General settings for the HTTP API server.
@@ -74,6 +76,7 @@ server:
   static_directory: dist/assets
   static_base_path: /assets
   templates_directory: dist
+  state_directory: data/state
 ```
 
 | Key | Default | Required | Description |
@@ -85,6 +88,7 @@ server:
 | `server.static_directory` | `dist/assets` | No | Directory with static assets. Can be a relative path (resolved from the executable's working directory) or absolute. |
 | `server.static_base_path` | `/assets` | No | URL base path for serving static files. |
 | `server.templates_directory` | `dist` | No | Directory with HTML templates used by the web UI. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `server.state_directory` | `data/state` | No | Directory for persistent local state, including the part cleanup queue. Must be writable by the service user. Relative paths are resolved from the working directory. |
 
   </TabItem>
   <TabItem value="env" label="Environment Variables">
@@ -97,6 +101,7 @@ MIKU_PUSH_SERVER_PORT=8080
 MIKU_PUSH_SERVER_STATIC_DIR=dist/assets
 MIKU_PUSH_SERVER_STATIC_BASE_PATH=/assets
 MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
+MIKU_PUSH_SERVER_STATE_DIRECTORY=data/state
 ```
 
 | Variable | Default | Required | Description |
@@ -108,6 +113,7 @@ MIKU_PUSH_SERVER_TEMPLATES_DIR=dist
 | `MIKU_PUSH_SERVER_STATIC_DIR` | `dist/assets` | No | Directory with static assets. Can be a relative path (resolved from the executable's working directory) or absolute. |
 | `MIKU_PUSH_SERVER_STATIC_BASE_PATH` | `/assets` | No | URL base path for serving static files. |
 | `MIKU_PUSH_SERVER_TEMPLATES_DIR` | `dist` | No | Directory with HTML templates used by the web UI. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `MIKU_PUSH_SERVER_STATE_DIRECTORY` | `data/state` | No | Directory for persistent local state, including the part cleanup queue. Must be writable by the service user. Relative paths are resolved from the working directory. |
 
   </TabItem>
 </Tabs>
@@ -170,7 +176,7 @@ upload:
   # Maximum size in bytes (e.g. 5GB)
   max_size: 5000000000
   # Storage directory
-  directory: data
+  directory: data/uploads
   # Expiration in seconds (e.g. 7 days)
   expires_in_seconds: 604800
   # Cleanup interval in seconds (e.g. 1 hour)
@@ -180,7 +186,7 @@ upload:
 | Key | Default | Required | Description |
 | :--- | :--- | :---: | :--- |
 | `upload.max_size` | No limit | No | Maximum allowed upload size in bytes. If not set, there is no limit. |
-| `upload.directory` | `data` | No | Directory where uploaded files are stored. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `upload.directory` | `data/uploads` | No | Directory where uploaded files are stored. Can be a relative path (resolved from the executable's working directory) or absolute. |
 | `upload.expires_in_seconds` | No expiration | No | Expiration time for uploaded files in seconds. If not set, files do not expire. |
 | `upload.expiration_cleanup_interval_seconds` | `3600` | No | Interval in seconds to check and delete expired files. |
 
@@ -189,7 +195,7 @@ upload:
 
 ```bash
 MIKU_PUSH_UPLOAD_MAX_SIZE=5000000000 # 5GB
-MIKU_PUSH_UPLOAD_DIRECTORY=data
+MIKU_PUSH_UPLOAD_DIRECTORY=data/uploads
 MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS=604800
 MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL=3600
 ```
@@ -197,7 +203,7 @@ MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL=3600
 | Variable | Default | Required | Description |
 | :--- | :--- | :---: | :--- |
 | `MIKU_PUSH_UPLOAD_MAX_SIZE` | No limit | No | Maximum allowed upload size in bytes. If not set, there is no limit. |
-| `MIKU_PUSH_UPLOAD_DIRECTORY` | `data` | No | Directory where uploaded files are stored. Can be a relative path (resolved from the executable's working directory) or absolute. |
+| `MIKU_PUSH_UPLOAD_DIRECTORY` | `data/uploads` | No | Directory where uploaded files are stored. Can be a relative path (resolved from the executable's working directory) or absolute. |
 | `MIKU_PUSH_UPLOAD_EXPIRES_IN_SECONDS` | No expiration | No | Expiration time for uploaded files in seconds. If not set, files do not expire. |
 | `MIKU_PUSH_UPLOAD_EXPIRATION_CLEANUP_INTERVAL` | `3600` | No | Interval in seconds to check and delete expired files. |
 

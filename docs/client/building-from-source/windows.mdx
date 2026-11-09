@@ -26,6 +26,8 @@ This helper is a separate .NET application that must be built and installed inde
 
 ### 1. Create a Self-Signed Certificate
 
+Run this section from the `mikupush` repository root. The certificate will be saved in the helper project directory.
+
 To install the helper's MSIX package, it must be signed. You can create a self-signed certificate for local development using PowerShell.
 
 First, create the certificate:
@@ -34,20 +36,20 @@ New-SelfSignedCertificate `
     -Type CodeSigningCert `
     -KeyUsage DigitalSignature `
     -CertStoreLocation "Cert:\CurrentUser\My" `
-    -Subject "CN=*Miku Push!* Team, O=*Miku Push!* Team, C=ES" `
-    -FriendlyName "*Miku Push!* Team"
+    -Subject "CN=Miku Push! Team, O=Miku Push! Team, C=ES" `
+    -FriendlyName "Miku Push! Team"
 ```
 
 Next, get the certificate's thumbprint and export it to a PFX file. Replace `<Your Password>` with a secure password of your choice.
 ```powershell
-$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like "**Miku Push!* Team*" } | Select-Object -ExpandProperty Thumbprint
-$password = ConvertTo-SecureString -String <Your Password> -Force -AsPlainText
-Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath MikuPushCert.pfx -Password $password
+$thumbprint = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -eq "CN=Miku Push! Team, O=Miku Push! Team, C=ES" } | Select-Object -ExpandProperty Thumbprint
+$password = ConvertTo-SecureString -String "<Your Password>" -Force -AsPlainText
+Export-PfxCertificate -cert "Cert:\CurrentUser\My\$thumbprint" -FilePath "$PWD/helpers/windows-helpers/MikuPushCert.pfx" -Password $password
 ```
 
 Finally, trust the exported certificate. You must **run this command as an Administrator**.
 ```powershell
-Import-PfxCertificate -FilePath MikuPushCert.pfx -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $password
+Import-PfxCertificate -FilePath "$PWD/helpers/windows-helpers/MikuPushCert.pfx" -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $password
 ```
 
 ### 2. Build the Signed MSIX Package
@@ -83,7 +85,7 @@ This process builds the main Tauri application.
 
 ### Production Build
 
-To build the optimized production binaries and installers (`.msi`, `.exe`) for Windows:
+To build the optimized production binaries and installers (`.msi`) for Windows:
 
 ```bash
 npm run tauri build
@@ -95,7 +97,7 @@ Or run the debug build:
 npm run tauri build -- --debug
 ```
 
-The resulting executables and installers will be located in `src-tauri/target/release/bundle/`.
+The resulting executables and installers will be located in `src-tauri/target/release/bundle/` for production and `src-tauri/target/debug/bundle/` for debug builds.
 
 ### Development Mode
 
